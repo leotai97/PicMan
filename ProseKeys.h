@@ -1,0 +1,564 @@
+// Prose Multi-Language Key Definition Header File
+
+// Add task to copy runtime file ProseData.dat to Debug and Release directories
+// Call static function ProseRuntimeClass::LoadReverseKeys() prior to obtaining a text item string
+
+
+// If any Prose IDs collide with a Resource ID change 40000
+
+#define PROSE_ID_START_NUMBER 40000
+
+#define COMMON_CANCELLED PROSE_ID_START_NUMBER+1
+#define COMMON_CUT_SHORT PROSE_ID_START_NUMBER+2
+#define COMMON_DIR_EXIST PROSE_ID_START_NUMBER+3
+#define COMMON_EXISTS PROSE_ID_START_NUMBER+4
+#define COMMON_FAILED PROSE_ID_START_NUMBER+5
+#define COMMON_FAILED_LOAD PROSE_ID_START_NUMBER+6
+#define COMMON_FAILED_QUESTION PROSE_ID_START_NUMBER+7
+#define COMMON_FILE_NOT_FOUND PROSE_ID_START_NUMBER+8
+#define COMMON_MOVE_TO_RECYCLE PROSE_ID_START_NUMBER+9
+#define COMMON_NA PROSE_ID_START_NUMBER+10
+#define COMMON_NAME_BLANK PROSE_ID_START_NUMBER+11
+#define COMMON_NEVER PROSE_ID_START_NUMBER+12
+#define COMMON_NO_ITEMS_FOUND PROSE_ID_START_NUMBER+13
+#define COMMON_NOT_FOUND PROSE_ID_START_NUMBER+14
+#define COMMON_NOTHING_SELECTED PROSE_ID_START_NUMBER+15
+#define COMMON_OF PROSE_ID_START_NUMBER+16
+#define COMMON_REMOVE_ROWS PROSE_ID_START_NUMBER+17
+#define COMMON_SUCCESS PROSE_ID_START_NUMBER+18
+#define COMMON_TO_FIX_IT PROSE_ID_START_NUMBER+19
+#define COMMON_USE PROSE_ID_START_NUMBER+20
+#define DLG_BASE_CHOOSE_PATH PROSE_ID_START_NUMBER+21
+#define DLG_BASE_NOT_FOUND PROSE_ID_START_NUMBER+22
+#define DLG_DB_CRED_STORED PROSE_ID_START_NUMBER+23
+#define DLG_DB_PROP_FILE_FAIL PROSE_ID_START_NUMBER+24
+#define DLG_DB_PROP_FILE_FAIL_2 PROSE_ID_START_NUMBER+25
+#define DLG_DB_RETRY PROSE_ID_START_NUMBER+26
+#define DLG_DB_RETRY_2 PROSE_ID_START_NUMBER+27
+#define DLG_DB_VALIDATE PROSE_ID_START_NUMBER+28
+#define DLG_DIR_BASE_PATH PROSE_ID_START_NUMBER+29
+#define DLG_DIR_BLANK PROSE_ID_START_NUMBER+30
+#define DLG_DIR_FOLDER_BLANK PROSE_ID_START_NUMBER+31
+#define DLG_DIR_GENERIC_PATH PROSE_ID_START_NUMBER+32
+#define DLG_DIR_NEW_FOLDER PROSE_ID_START_NUMBER+33
+#define DLG_DIR_NOT_UNDER PROSE_ID_START_NUMBER+34
+#define DLG_DIR_NOT_UNDER_2 PROSE_ID_START_NUMBER+35
+#define DLG_FOLDER_DELETE PROSE_ID_START_NUMBER+36
+#define DLG_FOLDER_UNDER PROSE_ID_START_NUMBER+37
+#define DLG_HASHTAG_BLANK PROSE_ID_START_NUMBER+38
+#define DLG_HASHTAG_CHOOSE PROSE_ID_START_NUMBER+39
+#define DLG_HASHTAG_EXISTS PROSE_ID_START_NUMBER+40
+#define DLG_HASHTAG_EXISTS_GLOBAL PROSE_ID_START_NUMBER+41
+#define DLG_HASHTAG_FOLDER_SELECTED PROSE_ID_START_NUMBER+42
+#define DLG_HASHTAG_GLOBAL_SELECTED PROSE_ID_START_NUMBER+43
+#define DLG_HASHTAG_SAME PROSE_ID_START_NUMBER+44
+#define ID_COLUMN_WIDTH PROSE_ID_START_NUMBER+45
+#define ID_FILE PROSE_ID_START_NUMBER+46
+#define ID_FILE_ACTIONS PROSE_ID_START_NUMBER+47
+#define ID_FILE_ACTIONS_MAINTAINFOLDERHASHTAGS PROSE_ID_START_NUMBER+48
+#define ID_FILE_ACTIONS_RELOADFOLDER PROSE_ID_START_NUMBER+49
+#define ID_FILE_ACTIONS_RELOADFOLDERTHUMBNAILS PROSE_ID_START_NUMBER+50
+#define ID_FILE_ACTIONS_RENAMEFILESTOHASHTAGS PROSE_ID_START_NUMBER+51
+#define ID_FILE_ACTIONS_RENUMBERFILESINFOLDER PROSE_ID_START_NUMBER+52
+#define ID_FILE_CLOSEFOLDER PROSE_ID_START_NUMBER+53
+#define ID_FILE_EXIT PROSE_ID_START_NUMBER+54
+#define ID_FILE_NEWFOLDER PROSE_ID_START_NUMBER+55
+#define ID_FILE_OPENFOLDER PROSE_ID_START_NUMBER+56
+#define ID_FILE_P1 PROSE_ID_START_NUMBER+57
+#define ID_FILE_P2 PROSE_ID_START_NUMBER+58
+#define ID_FILE_P3 PROSE_ID_START_NUMBER+59
+#define ID_FILE_P4 PROSE_ID_START_NUMBER+60
+#define ID_FILE_P5 PROSE_ID_START_NUMBER+61
+#define ID_FILE_P6 PROSE_ID_START_NUMBER+62
+#define ID_FILE_P7 PROSE_ID_START_NUMBER+63
+#define ID_FILE_P8 PROSE_ID_START_NUMBER+64
+#define ID_FILE_REFRESHIMPORTLIST PROSE_ID_START_NUMBER+65
+#define ID_FILE_SCANBASEFORNEWFOLDERS PROSE_ID_START_NUMBER+66
+#define ID_FILE_SETBASEDIRECTORY PROSE_ID_START_NUMBER+67
+#define ID_GROUP_MANAGE_CANCEL PROSE_ID_START_NUMBER+68
+#define ID_GROUP_MANAGE_CUT PROSE_ID_START_NUMBER+69
+#define ID_GROUP_MANAGE_PASTE_AFTER PROSE_ID_START_NUMBER+70
+#define ID_GROUP_MANAGE_PASTE_BEFORE PROSE_ID_START_NUMBER+71
+#define ID_HELP PROSE_ID_START_NUMBER+72
+#define ID_HELP_ABOUT PROSE_ID_START_NUMBER+73
+#define ID_POPUP_IMPORT_ADD_SELECTED_GROUP PROSE_ID_START_NUMBER+74
+#define ID_POPUP_IMPORT_DELETE_SELECTED PROSE_ID_START_NUMBER+75
+#define ID_POPUP_IMPORT_MOVE_LIST PROSE_ID_START_NUMBER+76
+#define ID_POPUP_IMPORT_MOVE_NEW_GROUP PROSE_ID_START_NUMBER+77
+#define ID_POPUP_IMPORT_PICVIEW PROSE_ID_START_NUMBER+78
+#define ID_POPUP_IMPORT_PROPERTIES PROSE_ID_START_NUMBER+79
+#define ID_POPUP_IMPORT_SELECT_ALL PROSE_ID_START_NUMBER+80
+#define ID_POPUP_IMPORT_SORTBY PROSE_ID_START_NUMBER+81
+#define ID_POPUP_LIST_ADD_FOLDER_HASHTAG PROSE_ID_START_NUMBER+82
+#define ID_POPUP_LIST_ADD_SELECTED_GROUP PROSE_ID_START_NUMBER+83
+#define ID_POPUP_LIST_ADD_TO_SELECTED_GROUP_HASHTAG PROSE_ID_START_NUMBER+84
+#define ID_POPUP_LIST_DELETE_SELECTED_FILES PROSE_ID_START_NUMBER+85
+#define ID_POPUP_LIST_EDIT PROSE_ID_START_NUMBER+86
+#define ID_POPUP_LIST_MOVE_NEW_GROUP PROSE_ID_START_NUMBER+87
+#define ID_POPUP_LIST_PROPERTIES PROSE_ID_START_NUMBER+88
+#define ID_POPUP_LIST_REPLACE_FOLDER_HASHTAG PROSE_ID_START_NUMBER+89
+#define ID_POPUP_LIST_SELECT_ALL PROSE_ID_START_NUMBER+90
+#define ID_POPUP_LIST_SORTBY PROSE_ID_START_NUMBER+91
+#define ID_POPUP_LIST_VIEW_PICTURE PROSE_ID_START_NUMBER+92
+#define ID_POPUP_LIST_VIEW_SELECTED_ITEMS PROSE_ID_START_NUMBER+93
+#define ID_SORT_BY_COLOR_RGB PROSE_ID_START_NUMBER+94
+#define ID_SORT_BY_EDGE_AVERAGE PROSE_ID_START_NUMBER+95
+#define ID_SORT_BY_FILEDATE PROSE_ID_START_NUMBER+96
+#define ID_SORT_BY_FILENAME PROSE_ID_START_NUMBER+97
+#define ID_SORT_BY_FILESIZE PROSE_ID_START_NUMBER+98
+#define ID_SORT_BY_FOLDERTAGS PROSE_ID_START_NUMBER+99
+#define ID_SORT_BY_GLOBALTAGS PROSE_ID_START_NUMBER+100
+#define ID_SORT_BY_HEIGHT PROSE_ID_START_NUMBER+101
+#define ID_SORT_BY_NAME_WITH_NUMBER PROSE_ID_START_NUMBER+102
+#define ID_SORT_BY_RATIO PROSE_ID_START_NUMBER+103
+#define ID_SORT_BY_WIDTH PROSE_ID_START_NUMBER+104
+#define ID_TOOL PROSE_ID_START_NUMBER+105
+#define ID_TOOL_DBCONNECTION PROSE_ID_START_NUMBER+106
+#define ID_TOOL_MAINTAINGLOBALHASHTAGS PROSE_ID_START_NUMBER+107
+#define ID_TOOL_SETIMPORTDIRECTORY PROSE_ID_START_NUMBER+108
+#define ID_TOOL_SETPHOTOEDITOR PROSE_ID_START_NUMBER+109
+#define ID_TREEGROUP_COLLAPSE PROSE_ID_START_NUMBER+110
+#define ID_TREEGROUP_DELETE_GROUP PROSE_ID_START_NUMBER+111
+#define ID_TREEGROUP_FAVORITE PROSE_ID_START_NUMBER+112
+#define ID_TREEGROUP_MANAGE_GROUP PROSE_ID_START_NUMBER+113
+#define ID_TREEGROUP_MOVE_GROUP_BACK PROSE_ID_START_NUMBER+114
+#define ID_TREEGROUP_PIC_BACK_TO_LIST PROSE_ID_START_NUMBER+115
+#define ID_TREEGROUP_PIC_DELETE PROSE_ID_START_NUMBER+116
+#define ID_TREEGROUP_PIC_MOVE_TO_ANOTHER PROSE_ID_START_NUMBER+117
+#define ID_TREEGROUP_PIC_PROPS PROSE_ID_START_NUMBER+118
+#define ID_TREEGROUP_RENAME_GROUP PROSE_ID_START_NUMBER+119
+#define ID_TREEGROUP_RENUMBER PROSE_ID_START_NUMBER+120
+#define ID_TREEGROUP_UNFAVORITE PROSE_ID_START_NUMBER+121
+#define ID_TREEGROUP_VIEW_GROUP PROSE_ID_START_NUMBER+122
+#define ID_TREEGROUP_VIEW_PIC PROSE_ID_START_NUMBER+123
+#define ID_TREETAGS_FAVORITE PROSE_ID_START_NUMBER+124
+#define ID_TREETAGS_GROUP_DELETE PROSE_ID_START_NUMBER+125
+#define ID_TREETAGS_GROUP_TAGS_REMOVE PROSE_ID_START_NUMBER+126
+#define ID_TREETAGS_GROUP_TAGS_UPDATE PROSE_ID_START_NUMBER+127
+#define ID_TREETAGS_GROUP_VIEW PROSE_ID_START_NUMBER+128
+#define ID_TREETAGS_ITEM_DELETE PROSE_ID_START_NUMBER+129
+#define ID_TREETAGS_ITEM_EDIT PROSE_ID_START_NUMBER+130
+#define ID_TREETAGS_ITEM_PROPS PROSE_ID_START_NUMBER+131
+#define ID_TREETAGS_ITEM_TAGS_REMOVE PROSE_ID_START_NUMBER+132
+#define ID_TREETAGS_ITEM_TAGS_UPDATE PROSE_ID_START_NUMBER+133
+#define ID_TREETAGS_ITEM_VIEW PROSE_ID_START_NUMBER+134
+#define ID_TREETAGS_UNFAVORITE PROSE_ID_START_NUMBER+135
+#define ID_VIEW PROSE_ID_START_NUMBER+136
+#define ID_VIEW_BASEDIRECTORYPROPERTIES PROSE_ID_START_NUMBER+137
+#define ID_VIEW_COLLAPSEALLGROUPS PROSE_ID_START_NUMBER+138
+#define ID_VIEW_EXPANDALLGROUPS PROSE_ID_START_NUMBER+139
+#define ID_VIEW_FOLDERPROPERTIES PROSE_ID_START_NUMBER+140
+#define ID_VIEW_REFRESHLISTANDTREE PROSE_ID_START_NUMBER+141
+#define ID_VIEW_SETGROUPVIEW PROSE_ID_START_NUMBER+142
+#define ID_VIEW_SETGROUPVIEW_FILENAMES PROSE_ID_START_NUMBER+143
+#define ID_VIEW_SETGROUPVIEW_HASHTAGS PROSE_ID_START_NUMBER+144
+#define ID_VIEW_SETLISTVIEW PROSE_ID_START_NUMBER+145
+#define ID_VIEW_SETLISTVIEW_DETAILS PROSE_ID_START_NUMBER+146
+#define ID_VIEW_SETLISTVIEW_ICONS PROSE_ID_START_NUMBER+147
+#define ID_VIEW_SETLISTVIEW_NOT_IN_TREE PROSE_ID_START_NUMBER+148
+#define ID_VIEW_SETLISTVIEW_SHOW_ALL PROSE_ID_START_NUMBER+149
+#define ID_VIEW_SORTLIST PROSE_ID_START_NUMBER+150
+#define ID_VIEW_SORTLIST_BORDERCOLORAVERAGE PROSE_ID_START_NUMBER+151
+#define ID_VIEW_SORTLIST_DATEADDED PROSE_ID_START_NUMBER+152
+#define ID_VIEW_SORTLIST_FHT PROSE_ID_START_NUMBER+153
+#define ID_VIEW_SORTLIST_GHT PROSE_ID_START_NUMBER+154
+#define ID_VIEW_SORTLIST_HEIGHT PROSE_ID_START_NUMBER+155
+#define ID_VIEW_SORTLIST_NAME PROSE_ID_START_NUMBER+156
+#define ID_VIEW_SORTLIST_NAME_NMBR PROSE_ID_START_NUMBER+157
+#define ID_VIEW_SORTLIST_RGBCOLORS PROSE_ID_START_NUMBER+158
+#define ID_VIEW_SORTLIST_SIZE PROSE_ID_START_NUMBER+159
+#define ID_VIEW_SORTLIST_WIDTH PROSE_ID_START_NUMBER+160
+#define ID_VIEW_SORTLIST_WIDTHDIVHEIGHT PROSE_ID_START_NUMBER+161
+#define ID_VIEW_VIEWALLBYGLOBALHASHTAG PROSE_ID_START_NUMBER+162
+#define ID_VIEW_VIEWALLDUPLICATES PROSE_ID_START_NUMBER+163
+#define ID_VIEW_VIEWALLGROUPS PROSE_ID_START_NUMBER+164
+#define ID_VIEW_VIEWALLPICTURESANDIMPORTS PROSE_ID_START_NUMBER+165
+#define ID_VIEW_VIEWALLPICTURESINFOLDER PROSE_ID_START_NUMBER+166
+#define ID_VIEW_VIEWBYGLOBALHASHTAG PROSE_ID_START_NUMBER+167
+#define ID_VIEW_VIEWIMPORTS PROSE_ID_START_NUMBER+168
+#define ID_VIEW_VIEWSLIDESHOW PROSE_ID_START_NUMBER+169
+#define MAIN_BASE_ADD PROSE_ID_START_NUMBER+170
+#define MAIN_BASE_FIX PROSE_ID_START_NUMBER+171
+#define MAIN_BASE_OPEN_FAIL PROSE_ID_START_NUMBER+172
+#define MAIN_BASE_REMOVE PROSE_ID_START_NUMBER+173
+#define MAIN_BASE_RESCAN PROSE_ID_START_NUMBER+174
+#define MAIN_DELETE_FAILED PROSE_ID_START_NUMBER+175
+#define MAIN_DELETE_PICTURE PROSE_ID_START_NUMBER+176
+#define MAIN_DUPLICATES_NOT_FOUND PROSE_ID_START_NUMBER+177
+#define MAIN_EDITOR_EXE PROSE_ID_START_NUMBER+178
+#define MAIN_FILE_MOVE_ERROR PROSE_ID_START_NUMBER+179
+#define MAIN_FOLDER_CLOSED PROSE_ID_START_NUMBER+180
+#define MAIN_FOLDER_DIR_NOT_FOUND PROSE_ID_START_NUMBER+181
+#define MAIN_FOLDER_NAME PROSE_ID_START_NUMBER+182
+#define MAIN_FOLDER_OPEN PROSE_ID_START_NUMBER+183
+#define MAIN_FOLDER_RELOAD PROSE_ID_START_NUMBER+184
+#define MAIN_FOLDER_RELOAD_THUMB PROSE_ID_START_NUMBER+185
+#define MAIN_FOLDER_SCAN PROSE_ID_START_NUMBER+186
+#define MAIN_GREETING PROSE_ID_START_NUMBER+187
+#define MAIN_GROUP_DELETE PROSE_ID_START_NUMBER+188
+#define MAIN_GROUP_EXISTS PROSE_ID_START_NUMBER+189
+#define MAIN_GROUP_MANAGE PROSE_ID_START_NUMBER+190
+#define MAIN_GROUP_NEW PROSE_ID_START_NUMBER+191
+#define MAIN_GROUP_NODE_ERROR PROSE_ID_START_NUMBER+192
+#define MAIN_GROUP_NOT_SELECTED PROSE_ID_START_NUMBER+193
+#define MAIN_GROUP_RENAME PROSE_ID_START_NUMBER+194
+#define MAIN_GROUP_RENUMBER PROSE_ID_START_NUMBER+195
+#define MAIN_GROUP_REORDER_FAILED PROSE_ID_START_NUMBER+196
+#define MAIN_HASHTAGS_NOT_FOUND PROSE_ID_START_NUMBER+197
+#define MAIN_HASHTAGS_NOT_SELECTED PROSE_ID_START_NUMBER+198
+#define MAIN_IMPORT_CHANGE PROSE_ID_START_NUMBER+199
+#define MAIN_IMPORT_LOCATION PROSE_ID_START_NUMBER+200
+#define MAIN_IMPORT_RENAME_FAILED PROSE_ID_START_NUMBER+201
+#define MAIN_IMPORT_RENAME_SUCCESS PROSE_ID_START_NUMBER+202
+#define MAIN_IMPORT_SET PROSE_ID_START_NUMBER+203
+#define MAIN_IMPORTS PROSE_ID_START_NUMBER+204
+#define MAIN_MOVE_RECYCLE PROSE_ID_START_NUMBER+205
+#define MAIN_NEW_FILE_PREFIX PROSE_ID_START_NUMBER+206
+#define MAIN_ORD_EXTENSION PROSE_ID_START_NUMBER+207
+#define MAIN_PICTURES_FAILED_LOAD PROSE_ID_START_NUMBER+208
+#define MAIN_PREFIX_MESSAGE PROSE_ID_START_NUMBER+209
+#define MAIN_RENAME_FILES_FAILED PROSE_ID_START_NUMBER+210
+#define MAIN_RENAME_TO_HASHTAGS PROSE_ID_START_NUMBER+211
+#define MAIN_SET_BASE PROSE_ID_START_NUMBER+212
+#define MAIN_SWITCH_GROUP_VIEW PROSE_ID_START_NUMBER+213
+#define MAIN_TREETAGS_ITEM_TO_LIST PROSE_ID_START_NUMBER+214
+#define UI_COLUMN_ADDED PROSE_ID_START_NUMBER+215
+#define UI_COLUMN_BASE_NAME PROSE_ID_START_NUMBER+216
+#define UI_COLUMN_COLORS PROSE_ID_START_NUMBER+217
+#define UI_COLUMN_COUNT PROSE_ID_START_NUMBER+218
+#define UI_COLUMN_DATE PROSE_ID_START_NUMBER+219
+#define UI_COLUMN_DIRECTORY PROSE_ID_START_NUMBER+220
+#define UI_COLUMN_FILE PROSE_ID_START_NUMBER+221
+#define UI_COLUMN_FOLDER PROSE_ID_START_NUMBER+222
+#define UI_COLUMN_GROUP_NAME PROSE_ID_START_NUMBER+223
+#define UI_COLUMN_HASHTAGS PROSE_ID_START_NUMBER+224
+#define UI_COLUMN_HEIGHT PROSE_ID_START_NUMBER+225
+#define UI_COLUMN_ITEMS PROSE_ID_START_NUMBER+226
+#define UI_COLUMN_LAST_ACTIVITY PROSE_ID_START_NUMBER+227
+#define UI_COLUMN_OPENED PROSE_ID_START_NUMBER+228
+#define UI_COLUMN_RATIO PROSE_ID_START_NUMBER+229
+#define UI_COLUMN_SET_NAME PROSE_ID_START_NUMBER+230
+#define UI_COLUMN_SIZE PROSE_ID_START_NUMBER+231
+#define UI_COLUMN_WIDTH PROSE_ID_START_NUMBER+232
+
+
+class ProseRuntimeClass
+{
+ public:
+ static void LoadReverseKeys(ProseUnit &prose)
+  {
+   prose.ReverseKeys.clear();
+
+   // Load reverse lookup key values
+
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_ABOUT_STATIC_1, L"IDC_ABOUT_STATIC_1"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_ABOUT_STATIC_2, L"IDC_ABOUT_STATIC_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_BASE_PROP_STATIC_1, L"IDC_BASE_PROP_STATIC_1"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_BASE_PROP_STATIC_2, L"IDC_BASE_PROP_STATIC_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_BASE_PROP_STATIC_3, L"IDC_BASE_PROP_STATIC_3"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_BASEITEM_MGR_ADD, L"IDC_BASEITEM_MGR_ADD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_BASEITEM_MGR_DROP, L"IDC_BASEITEM_MGR_DROP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_BASEITEM_MGR_EDIT, L"IDC_BASEITEM_MGR_EDIT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_BASEITEM_MGR_OK, L"IDC_BASEITEM_MGR_OK"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_FOLDER_OPEN_DROP, L"IDC_FOLDER_OPEN_DROP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_FOLDER_OPEN_SCAN, L"IDC_FOLDER_OPEN_SCAN"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_1, L"IDC_GLOBAL_SLIDE_1"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_2, L"IDC_GLOBAL_SLIDE_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_CHECK_ALL, L"IDC_GLOBAL_SLIDE_CHECK_ALL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_CHECK_NONE, L"IDC_GLOBAL_SLIDE_CHECK_NONE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_CHK_KEYS, L"IDC_GLOBAL_SLIDE_CHK_KEYS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_CHK_LIGHT, L"IDC_GLOBAL_SLIDE_CHK_LIGHT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_CHOOSE_SETS, L"IDC_GLOBAL_SLIDE_CHOOSE_SETS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_FOLDER_RND, L"IDC_GLOBAL_SLIDE_FOLDER_RND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_FOLDER_SORT, L"IDC_GLOBAL_SLIDE_FOLDER_SORT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_FOLDERS, L"IDC_GLOBAL_SLIDE_FOLDERS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_PICS_RND, L"IDC_GLOBAL_SLIDE_PICS_RND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_PICS_SORT, L"IDC_GLOBAL_SLIDE_PICS_SORT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_SETS, L"IDC_GLOBAL_SLIDE_SETS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_SETS_RND, L"IDC_GLOBAL_SLIDE_SETS_RND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_SETS_SORT, L"IDC_GLOBAL_SLIDE_SETS_SORT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GLOBAL_SLIDE_START, L"IDC_GLOBAL_SLIDE_START"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_NAME_MSG, L"IDC_GROUP_NAME_MSG"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_SORT_ASC, L"IDC_GROUP_SORT_ASC"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_SORT_R1, L"IDC_GROUP_SORT_R1"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_SORT_R2, L"IDC_GROUP_SORT_R2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_SORT_R3, L"IDC_GROUP_SORT_R3"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_SORT_R4, L"IDC_GROUP_SORT_R4"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_SORT_R5, L"IDC_GROUP_SORT_R5"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_GROUP_SORT_R6, L"IDC_GROUP_SORT_R6"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_HASHTAG_MAINT_ADD, L"IDC_HASHTAG_MAINT_ADD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_HASHTAG_SELECT_ADD, L"IDC_HASHTAG_SELECT_ADD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_HASHTAGSUB_ADD, L"IDC_HASHTAGSUB_ADD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_LOGIN_1, L"IDC_LOGIN_1"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_LOGIN_2, L"IDC_LOGIN_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_LOGIN_3, L"IDC_LOGIN_3"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_LOGIN_4, L"IDC_LOGIN_4"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_LOGIN_CHECK_REMEMBER, L"IDC_LOGIN_CHECK_REMEMBER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_LOGIN_CHECK_SHOWPWD, L"IDC_LOGIN_CHECK_SHOWPWD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_0, L"IDC_PIC_PROPS_0"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_10, L"IDC_PIC_PROPS_10"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_11, L"IDC_PIC_PROPS_11"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_12, L"IDC_PIC_PROPS_12"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_13, L"IDC_PIC_PROPS_13"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_14, L"IDC_PIC_PROPS_14"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_15, L"IDC_PIC_PROPS_15"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_16, L"IDC_PIC_PROPS_16"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_17, L"IDC_PIC_PROPS_17"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_2, L"IDC_PIC_PROPS_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_3, L"IDC_PIC_PROPS_3"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_4, L"IDC_PIC_PROPS_4"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_5, L"IDC_PIC_PROPS_5"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_6, L"IDC_PIC_PROPS_6"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_7, L"IDC_PIC_PROPS_7"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_8, L"IDC_PIC_PROPS_8"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDC_PIC_PROPS_9, L"IDC_PIC_PROPS_9"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDCANCEL, L"IDCANCEL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_BASE_PROP, L"IDD_BASE_PROP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_BASEITEM_MGR, L"IDD_BASEITEM_MGR"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_FOLDER_OPEN, L"IDD_FOLDER_OPEN"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_GLOBAL_SLIDE, L"IDD_GLOBAL_SLIDE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_GLOBAL_SLIDE_SETS, L"IDD_GLOBAL_SLIDE_SETS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_GROUP_NAME, L"IDD_GROUP_NAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_GROUP_SELECT, L"IDD_GROUP_SELECT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_GROUP_SORT, L"IDD_GROUP_SORT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_HASHTAG, L"IDD_HASHTAG"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_HASHTAG_CHOOSE, L"IDD_HASHTAG_CHOOSE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_HASHTAG_MAINT, L"IDD_HASHTAG_MAINT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_HASHTAG_SELECT, L"IDD_HASHTAG_SELECT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_LOGIN, L"IDD_LOGIN"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDD_PICTURE_PROPS, L"IDD_PICTURE_PROPS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(IDOK, L"IDOK"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_CANCELLED, L"COMMON_CANCELLED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_CUT_SHORT, L"COMMON_CUT_SHORT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_DIR_EXIST, L"COMMON_DIR_EXIST"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_EXISTS, L"COMMON_EXISTS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_FAILED, L"COMMON_FAILED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_FAILED_LOAD, L"COMMON_FAILED_LOAD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_FAILED_QUESTION, L"COMMON_FAILED_QUESTION"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_FILE_NOT_FOUND, L"COMMON_FILE_NOT_FOUND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_MOVE_TO_RECYCLE, L"COMMON_MOVE_TO_RECYCLE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_NA, L"COMMON_NA"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_NAME_BLANK, L"COMMON_NAME_BLANK"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_NEVER, L"COMMON_NEVER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_NO_ITEMS_FOUND, L"COMMON_NO_ITEMS_FOUND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_NOT_FOUND, L"COMMON_NOT_FOUND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_NOTHING_SELECTED, L"COMMON_NOTHING_SELECTED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_OF, L"COMMON_OF"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_REMOVE_ROWS, L"COMMON_REMOVE_ROWS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_SUCCESS, L"COMMON_SUCCESS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_TO_FIX_IT, L"COMMON_TO_FIX_IT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(COMMON_USE, L"COMMON_USE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_BASE_CHOOSE_PATH, L"DLG_BASE_CHOOSE_PATH"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_BASE_NOT_FOUND, L"DLG_BASE_NOT_FOUND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DB_CRED_STORED, L"DLG_DB_CRED_STORED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DB_PROP_FILE_FAIL, L"DLG_DB_PROP_FILE_FAIL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DB_PROP_FILE_FAIL_2, L"DLG_DB_PROP_FILE_FAIL_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DB_RETRY, L"DLG_DB_RETRY"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DB_RETRY_2, L"DLG_DB_RETRY_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DB_VALIDATE, L"DLG_DB_VALIDATE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DIR_BASE_PATH, L"DLG_DIR_BASE_PATH"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DIR_BLANK, L"DLG_DIR_BLANK"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DIR_FOLDER_BLANK, L"DLG_DIR_FOLDER_BLANK"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DIR_GENERIC_PATH, L"DLG_DIR_GENERIC_PATH"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DIR_NEW_FOLDER, L"DLG_DIR_NEW_FOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DIR_NOT_UNDER, L"DLG_DIR_NOT_UNDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_DIR_NOT_UNDER_2, L"DLG_DIR_NOT_UNDER_2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_FOLDER_DELETE, L"DLG_FOLDER_DELETE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_FOLDER_UNDER, L"DLG_FOLDER_UNDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_HASHTAG_BLANK, L"DLG_HASHTAG_BLANK"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_HASHTAG_CHOOSE, L"DLG_HASHTAG_CHOOSE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_HASHTAG_EXISTS, L"DLG_HASHTAG_EXISTS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_HASHTAG_EXISTS_GLOBAL, L"DLG_HASHTAG_EXISTS_GLOBAL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_HASHTAG_FOLDER_SELECTED, L"DLG_HASHTAG_FOLDER_SELECTED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_HASHTAG_GLOBAL_SELECTED, L"DLG_HASHTAG_GLOBAL_SELECTED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(DLG_HASHTAG_SAME, L"DLG_HASHTAG_SAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_COLUMN_WIDTH, L"ID_COLUMN_WIDTH"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE, L"ID_FILE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_ACTIONS, L"ID_FILE_ACTIONS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_ACTIONS_MAINTAINFOLDERHASHTAGS, L"ID_FILE_ACTIONS_MAINTAINFOLDERHASHTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_ACTIONS_RELOADFOLDER, L"ID_FILE_ACTIONS_RELOADFOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_ACTIONS_RELOADFOLDERTHUMBNAILS, L"ID_FILE_ACTIONS_RELOADFOLDERTHUMBNAILS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_ACTIONS_RENAMEFILESTOHASHTAGS, L"ID_FILE_ACTIONS_RENAMEFILESTOHASHTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_ACTIONS_RENUMBERFILESINFOLDER, L"ID_FILE_ACTIONS_RENUMBERFILESINFOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_CLOSEFOLDER, L"ID_FILE_CLOSEFOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_EXIT, L"ID_FILE_EXIT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_NEWFOLDER, L"ID_FILE_NEWFOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_OPENFOLDER, L"ID_FILE_OPENFOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P1, L"ID_FILE_P1"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P2, L"ID_FILE_P2"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P3, L"ID_FILE_P3"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P4, L"ID_FILE_P4"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P5, L"ID_FILE_P5"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P6, L"ID_FILE_P6"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P7, L"ID_FILE_P7"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_P8, L"ID_FILE_P8"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_REFRESHIMPORTLIST, L"ID_FILE_REFRESHIMPORTLIST"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_SCANBASEFORNEWFOLDERS, L"ID_FILE_SCANBASEFORNEWFOLDERS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_FILE_SETBASEDIRECTORY, L"ID_FILE_SETBASEDIRECTORY"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_GROUP_MANAGE_CANCEL, L"ID_GROUP_MANAGE_CANCEL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_GROUP_MANAGE_CUT, L"ID_GROUP_MANAGE_CUT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_GROUP_MANAGE_PASTE_AFTER, L"ID_GROUP_MANAGE_PASTE_AFTER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_GROUP_MANAGE_PASTE_BEFORE, L"ID_GROUP_MANAGE_PASTE_BEFORE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_HELP, L"ID_HELP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_HELP_ABOUT, L"ID_HELP_ABOUT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_ADD_SELECTED_GROUP, L"ID_POPUP_IMPORT_ADD_SELECTED_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_DELETE_SELECTED, L"ID_POPUP_IMPORT_DELETE_SELECTED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_MOVE_LIST, L"ID_POPUP_IMPORT_MOVE_LIST"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_MOVE_NEW_GROUP, L"ID_POPUP_IMPORT_MOVE_NEW_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_PICVIEW, L"ID_POPUP_IMPORT_PICVIEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_PROPERTIES, L"ID_POPUP_IMPORT_PROPERTIES"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_SELECT_ALL, L"ID_POPUP_IMPORT_SELECT_ALL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_IMPORT_SORTBY, L"ID_POPUP_IMPORT_SORTBY"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_ADD_FOLDER_HASHTAG, L"ID_POPUP_LIST_ADD_FOLDER_HASHTAG"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_ADD_SELECTED_GROUP, L"ID_POPUP_LIST_ADD_SELECTED_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_ADD_TO_SELECTED_GROUP_HASHTAG, L"ID_POPUP_LIST_ADD_TO_SELECTED_GROUP_HASHTAG"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_DELETE_SELECTED_FILES, L"ID_POPUP_LIST_DELETE_SELECTED_FILES"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_EDIT, L"ID_POPUP_LIST_EDIT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_MOVE_NEW_GROUP, L"ID_POPUP_LIST_MOVE_NEW_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_PROPERTIES, L"ID_POPUP_LIST_PROPERTIES"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_REPLACE_FOLDER_HASHTAG, L"ID_POPUP_LIST_REPLACE_FOLDER_HASHTAG"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_SELECT_ALL, L"ID_POPUP_LIST_SELECT_ALL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_SORTBY, L"ID_POPUP_LIST_SORTBY"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_VIEW_PICTURE, L"ID_POPUP_LIST_VIEW_PICTURE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_POPUP_LIST_VIEW_SELECTED_ITEMS, L"ID_POPUP_LIST_VIEW_SELECTED_ITEMS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_COLOR_RGB, L"ID_SORT_BY_COLOR_RGB"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_EDGE_AVERAGE, L"ID_SORT_BY_EDGE_AVERAGE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_FILEDATE, L"ID_SORT_BY_FILEDATE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_FILENAME, L"ID_SORT_BY_FILENAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_FILESIZE, L"ID_SORT_BY_FILESIZE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_FOLDERTAGS, L"ID_SORT_BY_FOLDERTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_GLOBALTAGS, L"ID_SORT_BY_GLOBALTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_HEIGHT, L"ID_SORT_BY_HEIGHT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_NAME_WITH_NUMBER, L"ID_SORT_BY_NAME_WITH_NUMBER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_RATIO, L"ID_SORT_BY_RATIO"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_SORT_BY_WIDTH, L"ID_SORT_BY_WIDTH"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TOOL, L"ID_TOOL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TOOL_DBCONNECTION, L"ID_TOOL_DBCONNECTION"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TOOL_MAINTAINGLOBALHASHTAGS, L"ID_TOOL_MAINTAINGLOBALHASHTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TOOL_SETIMPORTDIRECTORY, L"ID_TOOL_SETIMPORTDIRECTORY"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TOOL_SETPHOTOEDITOR, L"ID_TOOL_SETPHOTOEDITOR"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_COLLAPSE, L"ID_TREEGROUP_COLLAPSE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_DELETE_GROUP, L"ID_TREEGROUP_DELETE_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_FAVORITE, L"ID_TREEGROUP_FAVORITE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_MANAGE_GROUP, L"ID_TREEGROUP_MANAGE_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_MOVE_GROUP_BACK, L"ID_TREEGROUP_MOVE_GROUP_BACK"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_PIC_BACK_TO_LIST, L"ID_TREEGROUP_PIC_BACK_TO_LIST"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_PIC_DELETE, L"ID_TREEGROUP_PIC_DELETE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_PIC_MOVE_TO_ANOTHER, L"ID_TREEGROUP_PIC_MOVE_TO_ANOTHER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_PIC_PROPS, L"ID_TREEGROUP_PIC_PROPS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_RENAME_GROUP, L"ID_TREEGROUP_RENAME_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_RENUMBER, L"ID_TREEGROUP_RENUMBER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_UNFAVORITE, L"ID_TREEGROUP_UNFAVORITE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_VIEW_GROUP, L"ID_TREEGROUP_VIEW_GROUP"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREEGROUP_VIEW_PIC, L"ID_TREEGROUP_VIEW_PIC"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_FAVORITE, L"ID_TREETAGS_FAVORITE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_GROUP_DELETE, L"ID_TREETAGS_GROUP_DELETE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_GROUP_TAGS_REMOVE, L"ID_TREETAGS_GROUP_TAGS_REMOVE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_GROUP_TAGS_UPDATE, L"ID_TREETAGS_GROUP_TAGS_UPDATE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_GROUP_VIEW, L"ID_TREETAGS_GROUP_VIEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_ITEM_DELETE, L"ID_TREETAGS_ITEM_DELETE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_ITEM_EDIT, L"ID_TREETAGS_ITEM_EDIT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_ITEM_PROPS, L"ID_TREETAGS_ITEM_PROPS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_ITEM_TAGS_REMOVE, L"ID_TREETAGS_ITEM_TAGS_REMOVE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_ITEM_TAGS_UPDATE, L"ID_TREETAGS_ITEM_TAGS_UPDATE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_ITEM_VIEW, L"ID_TREETAGS_ITEM_VIEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_TREETAGS_UNFAVORITE, L"ID_TREETAGS_UNFAVORITE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW, L"ID_VIEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_BASEDIRECTORYPROPERTIES, L"ID_VIEW_BASEDIRECTORYPROPERTIES"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_COLLAPSEALLGROUPS, L"ID_VIEW_COLLAPSEALLGROUPS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_EXPANDALLGROUPS, L"ID_VIEW_EXPANDALLGROUPS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_FOLDERPROPERTIES, L"ID_VIEW_FOLDERPROPERTIES"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_REFRESHLISTANDTREE, L"ID_VIEW_REFRESHLISTANDTREE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETGROUPVIEW, L"ID_VIEW_SETGROUPVIEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETGROUPVIEW_FILENAMES, L"ID_VIEW_SETGROUPVIEW_FILENAMES"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETGROUPVIEW_HASHTAGS, L"ID_VIEW_SETGROUPVIEW_HASHTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETLISTVIEW, L"ID_VIEW_SETLISTVIEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETLISTVIEW_DETAILS, L"ID_VIEW_SETLISTVIEW_DETAILS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETLISTVIEW_ICONS, L"ID_VIEW_SETLISTVIEW_ICONS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETLISTVIEW_NOT_IN_TREE, L"ID_VIEW_SETLISTVIEW_NOT_IN_TREE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SETLISTVIEW_SHOW_ALL, L"ID_VIEW_SETLISTVIEW_SHOW_ALL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST, L"ID_VIEW_SORTLIST"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_BORDERCOLORAVERAGE, L"ID_VIEW_SORTLIST_BORDERCOLORAVERAGE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_DATEADDED, L"ID_VIEW_SORTLIST_DATEADDED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_FHT, L"ID_VIEW_SORTLIST_FHT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_GHT, L"ID_VIEW_SORTLIST_GHT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_HEIGHT, L"ID_VIEW_SORTLIST_HEIGHT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_NAME, L"ID_VIEW_SORTLIST_NAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_NAME_NMBR, L"ID_VIEW_SORTLIST_NAME_NMBR"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_RGBCOLORS, L"ID_VIEW_SORTLIST_RGBCOLORS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_SIZE, L"ID_VIEW_SORTLIST_SIZE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_WIDTH, L"ID_VIEW_SORTLIST_WIDTH"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_SORTLIST_WIDTHDIVHEIGHT, L"ID_VIEW_SORTLIST_WIDTHDIVHEIGHT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWALLBYGLOBALHASHTAG, L"ID_VIEW_VIEWALLBYGLOBALHASHTAG"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWALLDUPLICATES, L"ID_VIEW_VIEWALLDUPLICATES"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWALLGROUPS, L"ID_VIEW_VIEWALLGROUPS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWALLPICTURESANDIMPORTS, L"ID_VIEW_VIEWALLPICTURESANDIMPORTS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWALLPICTURESINFOLDER, L"ID_VIEW_VIEWALLPICTURESINFOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWBYGLOBALHASHTAG, L"ID_VIEW_VIEWBYGLOBALHASHTAG"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWIMPORTS, L"ID_VIEW_VIEWIMPORTS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(ID_VIEW_VIEWSLIDESHOW, L"ID_VIEW_VIEWSLIDESHOW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_BASE_ADD, L"MAIN_BASE_ADD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_BASE_FIX, L"MAIN_BASE_FIX"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_BASE_OPEN_FAIL, L"MAIN_BASE_OPEN_FAIL"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_BASE_REMOVE, L"MAIN_BASE_REMOVE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_BASE_RESCAN, L"MAIN_BASE_RESCAN"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_DELETE_FAILED, L"MAIN_DELETE_FAILED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_DELETE_PICTURE, L"MAIN_DELETE_PICTURE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_DUPLICATES_NOT_FOUND, L"MAIN_DUPLICATES_NOT_FOUND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_EDITOR_EXE, L"MAIN_EDITOR_EXE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FILE_MOVE_ERROR, L"MAIN_FILE_MOVE_ERROR"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FOLDER_CLOSED, L"MAIN_FOLDER_CLOSED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FOLDER_DIR_NOT_FOUND, L"MAIN_FOLDER_DIR_NOT_FOUND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FOLDER_NAME, L"MAIN_FOLDER_NAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FOLDER_OPEN, L"MAIN_FOLDER_OPEN"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FOLDER_RELOAD, L"MAIN_FOLDER_RELOAD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FOLDER_RELOAD_THUMB, L"MAIN_FOLDER_RELOAD_THUMB"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_FOLDER_SCAN, L"MAIN_FOLDER_SCAN"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GREETING, L"MAIN_GREETING"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_DELETE, L"MAIN_GROUP_DELETE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_EXISTS, L"MAIN_GROUP_EXISTS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_MANAGE, L"MAIN_GROUP_MANAGE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_NEW, L"MAIN_GROUP_NEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_NODE_ERROR, L"MAIN_GROUP_NODE_ERROR"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_NOT_SELECTED, L"MAIN_GROUP_NOT_SELECTED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_RENAME, L"MAIN_GROUP_RENAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_RENUMBER, L"MAIN_GROUP_RENUMBER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_GROUP_REORDER_FAILED, L"MAIN_GROUP_REORDER_FAILED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_HASHTAGS_NOT_FOUND, L"MAIN_HASHTAGS_NOT_FOUND"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_HASHTAGS_NOT_SELECTED, L"MAIN_HASHTAGS_NOT_SELECTED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_IMPORT_CHANGE, L"MAIN_IMPORT_CHANGE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_IMPORT_LOCATION, L"MAIN_IMPORT_LOCATION"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_IMPORT_RENAME_FAILED, L"MAIN_IMPORT_RENAME_FAILED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_IMPORT_RENAME_SUCCESS, L"MAIN_IMPORT_RENAME_SUCCESS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_IMPORT_SET, L"MAIN_IMPORT_SET"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_IMPORTS, L"MAIN_IMPORTS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_MOVE_RECYCLE, L"MAIN_MOVE_RECYCLE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_NEW_FILE_PREFIX, L"MAIN_NEW_FILE_PREFIX"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_ORD_EXTENSION, L"MAIN_ORD_EXTENSION"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_PICTURES_FAILED_LOAD, L"MAIN_PICTURES_FAILED_LOAD"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_PREFIX_MESSAGE, L"MAIN_PREFIX_MESSAGE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_RENAME_FILES_FAILED, L"MAIN_RENAME_FILES_FAILED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_RENAME_TO_HASHTAGS, L"MAIN_RENAME_TO_HASHTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_SET_BASE, L"MAIN_SET_BASE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_SWITCH_GROUP_VIEW, L"MAIN_SWITCH_GROUP_VIEW"));
+   prose.ReverseKeys.insert(std::pair<int, String>(MAIN_TREETAGS_ITEM_TO_LIST, L"MAIN_TREETAGS_ITEM_TO_LIST"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_ADDED, L"UI_COLUMN_ADDED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_BASE_NAME, L"UI_COLUMN_BASE_NAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_COLORS, L"UI_COLUMN_COLORS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_COUNT, L"UI_COLUMN_COUNT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_DATE, L"UI_COLUMN_DATE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_DIRECTORY, L"UI_COLUMN_DIRECTORY"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_FILE, L"UI_COLUMN_FILE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_FOLDER, L"UI_COLUMN_FOLDER"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_GROUP_NAME, L"UI_COLUMN_GROUP_NAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_HASHTAGS, L"UI_COLUMN_HASHTAGS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_HEIGHT, L"UI_COLUMN_HEIGHT"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_ITEMS, L"UI_COLUMN_ITEMS"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_LAST_ACTIVITY, L"UI_COLUMN_LAST_ACTIVITY"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_OPENED, L"UI_COLUMN_OPENED"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_RATIO, L"UI_COLUMN_RATIO"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_SET_NAME, L"UI_COLUMN_SET_NAME"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_SIZE, L"UI_COLUMN_SIZE"));
+   prose.ReverseKeys.insert(std::pair<int, String>(UI_COLUMN_WIDTH, L"UI_COLUMN_WIDTH"));
+  }
+};

@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PicMan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PictureItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FolderItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HashTag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenFileDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HashTagSelectCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalSlideDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupShowWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MySQLODBC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GroupManageWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ProseKeys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PicMan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PictureItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FolderItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashTag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenFileDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Controls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HashTagSelectCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalSlideDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupShowWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MySQLODBC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GroupManageWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PicMan.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="PicMan.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\ArrowLeft.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\cancel.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\CancelMove.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\check.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\cut.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\delete.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\details.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Down.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Favorites.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Favorites16.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Go.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\home.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Icons.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\index.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Magnify.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\MoveAfter.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\MoveBefore.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\NotLoaded.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Picture.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Pictures.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Prev.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Search.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Setting.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Settings.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Images\Up.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\icon1.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\icon2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\bmp00001.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\bitmap2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\heart1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\bmp00002.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="images\bmp00003.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
