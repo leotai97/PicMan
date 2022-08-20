@@ -1,0 +1,1 @@
+PicMan is built as 64 bit.
