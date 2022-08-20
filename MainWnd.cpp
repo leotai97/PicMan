@@ -115,7 +115,7 @@ bool MainWnd::Create(String const &wndcls, int nCmdShow)
    }
  }
 
- m_CurrentImportDir = App->GetSetting(L"LastImport");
+ m_CurrentImportDir = App->Options.GetSetting(L"LastImport");
  if (m_CurrentImportDir.Length()>0) 
   {
    ReScanImports();
@@ -1814,7 +1814,7 @@ void MainWnd::mnuToolsSetImportDirectory()
  dir= OpenFileDlg::ChooseFolder(m_hWnd, App->Prose.Text(MAIN_IMPORT_LOCATION));
  if (dir.Length()>0)
   {
-   App->SaveSetting(L"LastImport", dir);
+   App->Options.SaveSetting(L"LastImport", dir);
    m_CurrentImportDir=dir;
    ReScanImports();
   }
