@@ -1,7 +1,7 @@
 # PicMan
 Picture Manager, a program designed to manage several different directories of JPEG images with the help of MySQL.
 
-Written in c++ on Windows 10.  Uses 2 custom libaries, AWindowsLib and AWindowsProse both on GitHub under my account.
+Written in c++ on Windows 10.  Uses a custom libary, AWindowsLib, on GitHub under my account.
 PicMan uses mysql-connector-odbc-8.0.29-winx64.msi for connecting to the database.
 
 Picture Manager was written and developed to sort through hundreds of images of a specific subject matter coming from many different sources. It's used to group pictures under a directory together into sets.  It can test for exact duplication. Pictures can be sorted by color to help find additional pictures of a set or to weed out near duplicate images. Images can be tagged with either global or folder level hash tags to help with organization.
