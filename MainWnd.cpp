@@ -2375,7 +2375,7 @@ void MainWnd::mnuPopUpImportMoveToNewGroup()
 
  for(const auto &ndx : indices)
   {
-   id = m_ListImport.GetItemParam(indices[ndx]);
+   id = m_ListImport.GetItemParam(ndx);
    #ifdef _DEBUG
    if (App->Pictures.count(id) == 0) throw L"m_ListImports param not a valid ImageParser id";
    #endif
