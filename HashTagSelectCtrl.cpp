@@ -269,10 +269,8 @@ WMR HashTagSelectCtrl::OnContextMenu(HWND hChild, Point const &pt)
 
 void HashTagSelectCtrl::ShowContextMenu(Point const &pt)
 {
- MENUITEMINFO mi={0};
+ AMenu menu;
  String txt;
- HMENU hMenu;
- UINT flags;
 
  if (EditHashTag == nullptr)
    return;
@@ -280,41 +278,18 @@ void HashTagSelectCtrl::ShowContextMenu(Point const &pt)
  if (EditHashTag->TagType() == HashTag::HashTagType::None)
    return;
 
- hMenu = ::CreatePopupMenu();
+ menu.CreateContextMenu();
 
- mi.cbSize=sizeof(MENUITEMINFO);
- mi.fMask = MIIM_STRING | MIIM_FTYPE | MIIM_ID | MIIM_STATE;
+ txt = App->Prose.TextArgs(CTRL_HT_EDIT, EditHashTag->Name());
+ menu.AddMenu(CTRL_HT_EDIT, txt);
 
- txt = L"Edit \""; 
- txt += EditHashTag->Name();
- txt += L"\"";
+ txt = App->Prose.TextArgs(CTRL_HT_COPY, EditHashTag->Name());
+ menu.AddMenu(CTRL_HT_COPY, txt);
 
- mi.wID = HTSCEditId;
- mi.fState = MFS_ENABLED;  // rest of the items are enabled
- mi.dwTypeData = (wchar_t *)txt.Chars(); 
- ::InsertMenuItem(hMenu, 1, true, &mi); 
+ txt = App->Prose.TextArgs(CTRL_HT_DROP, EditHashTag->Name());
+ menu.AddMenu(CTRL_HT_DROP, txt);
 
- txt = L"Copy \""; 
- txt += EditHashTag->Name();
- txt += L"\" Name";
-
- mi.wID = HTSCCopyId;
- mi.dwTypeData = (wchar_t *)txt.Chars();
- ::InsertMenuItem(hMenu, 2, true, &mi); 
-
- txt = L"Drop HashTag \""; 
- txt += EditHashTag->Name();
- txt += L"\"";
-
- mi.wID = HTSCDeleteId;
- mi.dwTypeData = (wchar_t *)txt.Chars();
- ::InsertMenuItem(hMenu, 3, true, &mi); 
-
- flags = TPM_LEFTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_NOANIMATION;
-
- TrackPopupMenu(hMenu, flags, pt.X, pt.Y, 0, m_hWnd, nullptr);
-
- DestroyMenu(hMenu);
+ menu.ShowContextMenu(this, pt);
 }
 
 
@@ -495,19 +470,20 @@ void HashTagSelectCtrl::OnMenuEdit() // Handles mnuEdit.Click
 
  if (EditHashTag->TagType() == HashTag::HashTagType::None)
   {
-   App->Response(L"Hashtag not selected for edit");
+   App->Response(COMMON_NOTHING_SELECTED);
    return;
   }
 
- if (EditHashTag->TagType() == HashTag::HashTagType::GlobalTag && String::Compare(EditHashTag->Name(), L"Favorite")==0)
+ if (EditHashTag->TagType() == HashTag::HashTagType::GlobalTag && EditHashTag->ID()==1)
   {
-   App->Response(L"The global Favorite hashtag can't be changed, add a new global tag.");
+   App->Response(CTRL_HT_FAV_CHG);
    return;
  }
 
- if (dlg.Show(this) == DialogResult::OK)
+ if (dlg.Show(this, *EditHashTag) == DialogResult::OK)
   {
-   ::InvalidateRect(m_hWnd, nullptr, false);
+   EditHashTag->SetName(dlg.EditTag.Name());  // EditHashTag is a pointer to the actual item in map
+   Refresh();
    ::SendMessage(m_Parent->Handle(), WM_HTSC_NAME_CHANGED, (WPARAM)m_hWnd, 0);
   }
 }
@@ -527,13 +503,13 @@ void HashTagSelectCtrl::OnMenuDelete() // Handles mnuDelete.Click
 
  if (EditHashTag->TagType() == HashTag::HashTagType::None)
   {
-   App->Response(L"Hashtag not selected for delete");
+   App->Response(COMMON_NOTHING_SELECTED);
    return;
   }
 
- if (EditHashTag->TagType() == HashTag::HashTagType::GlobalTag && String::Compare(EditHashTag->Name(),L"Favorite")==0) 
+ if (EditHashTag->TagType() == HashTag::HashTagType::GlobalTag && EditHashTag->ID()==1) 
   {
-   App->Response(L"The global Favorite hashtag can't be deleted.");
+   App->Response(CTRL_HT_FAV_DROP);
    return;
   }
 
@@ -543,17 +519,12 @@ void HashTagSelectCtrl::OnMenuDelete() // Handles mnuDelete.Click
     {
      if (EditHashTag->Folder()->FolderHashTagInUse(*EditHashTag) == true)
       {
-       msg = L"Folder hashtag ";
-       msg += EditHashTag->ToString();
-       msg += L" is being used. Delete Cancelled.";
-       App->Response(msg);
+       App->Response(App->Prose.TextArgs(CTRL_HT_FLDR_USE, EditHashTag->Name()));
        return;
       }
-     msg = L"Delete hashtag \"";
-     msg += EditHashTag->Name();
-     msg += L"\" of folder ";
-     msg += EditHashTag->Folder()->Folder();
-     msg += L"?";
+
+     msg = App->Prose.TextArgs(CTRL_HT_DROP_MSG, EditHashTag->Name(), EditHashTag->Folder()->Folder());
+
      if (App->Question(msg, MB_OKCANCEL) != DialogResult::OK)
        return;
      for(const auto &h : PictureMap)
@@ -572,10 +543,7 @@ void HashTagSelectCtrl::OnMenuDelete() // Handles mnuDelete.Click
      } break;
    case HashTag::HashTagType::GlobalTag:
     {
-     msg=L"Delete global hashtag ";
-     msg += EditHashTag->Name();
-     msg += L" ?";
-     if (App->Question(msg, MB_OKCANCEL) != DialogResult::OK)
+     if (App->Question(App->Prose.TextArgs(CTRL_HT_DROP_GBL_MSG, EditHashTag->Name()), MB_OKCANCEL) != DialogResult::OK)
        return;
      RemoveGlobalHashTag(EditHashTag);
      App->DropGlobalHashTag(*EditHashTag); // ght is deconstructed
@@ -610,9 +578,9 @@ WMR HashTagSelectCtrl::OnCommand(int child, HWND hWnd)
 {
  switch(child)
   {
-   case HTSCEditId:   OnMenuEdit(); break;
-   case HTSCDeleteId: OnMenuDelete(); break;
-   case HTSCCopyId:   OnMenuCopy(); break;
+   case CTRL_HT_EDIT: OnMenuEdit(); break;
+   case CTRL_HT_DROP: OnMenuDelete(); break;
+   case CTRL_HT_COPY: OnMenuCopy(); break;
   }
  return WMR::One;
 }

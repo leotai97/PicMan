@@ -62,6 +62,8 @@ bool PicManApp::Init(HINSTANCE hInst, int nCmdShow, String const &appName, Strin
    return false;
 
  GlobalHashTags = HashTag::LoadGlobalHashTags();
+ if (GlobalHashTags.count(1) == 0)
+   AddGlobalHashTag(App->Prose.Text(COMMON_FAVORITE));
  
  Bases = BaseItem::LoadBases();
   
@@ -133,7 +135,7 @@ bool PicManApp::UpdateGlobalHashTag(HashTag &ht, String const &s)
      return false;  // duplication
   }
 
- MySqlCommand cmd(L"UPDATE hashtag_global SET name=@s WHERE hashtag_id=@i", DB->Con());
+ MySqlCommand cmd(L"UPDATE hashtag_global SET name=@s WHERE hashtag_id=@i;", DB->Con());
  cmd.Parameters.Add(new MySqlParameter(L"@s", s));
  cmd.Parameters.Add(new MySqlParameter(L"@i", ht.ID()));
  cmd.ExecuteNonQuery();
@@ -150,8 +152,8 @@ void PicManApp::DropGlobalHashTag(HashTag const &ght)
 
  if (ght.TagType() != HashTag::HashTagType::GlobalTag) throw L"not a global tag";
 
- if (String::Compare(ght.Name(), L"Favorite") == 0)
-   throw L"tried to remove Favorite";
+ if (ght.ID() == 1) 
+   return;  // 1 is reserved for favorite
 
  MySqlCommand cmd(L"DELETE FROM picture_global_hashtag WHERE hashtag_id=@h; DELETE FROM hashtag_global WHERE hashtag_id=@h;",DB->Con());
  cmd.Parameters.Add(new MySqlParameter(L"@h", ght.ID()));
@@ -203,10 +205,10 @@ HashTag PicManApp::GetFavoriteHashTag()
 {
  for (const auto &ht : GlobalHashTags)
   {
-   if (String::Compare(ht.second.Name(), L"Favorite") == 0) 
+   if (ht.second.ID() == 1) 
      return ht.second;
   }
- throw L"Favorite hashtag not found, name is not supposed to be changed";
+ throw L"Favorite hashtag not found, id = 1 is supposed to be reserved";
 }
 
 void PicManApp::SaveSetting(String const &thing, String const &val)

@@ -520,6 +520,13 @@ DialogResult HashTagEditDlg::Show(AWnd *parent)
  return ADialog::Show(IDD_HASHTAG_EDIT, parent);
 }
 
+DialogResult HashTagEditDlg::Show(AWnd *parent, HashTag const &ht)
+{
+ EditTag = ht;
+ return ADialog::Show(IDD_HASHTAG_EDIT, parent);
+}
+
+
 void HashTagEditDlg::OnInitDialog()
 {
  ADialog::OnInitDialog();
@@ -529,6 +536,9 @@ void HashTagEditDlg::OnInitDialog()
 
  m_OK.SetIcon(IDI_CHECK, Size(16, 16));
  m_Cancel.SetIcon(IDI_CANCEL,Size(16,16));
+
+ if (EditTag.ID() > 0)
+   SetItemText(IDC_HASHTAG_EDITBOX, EditTag.Name());
 }
 
 WMR HashTagEditDlg::OnCommand(int child, HWND hChild)
@@ -590,6 +600,7 @@ void HashTagEditDlg::OnOK()
        App->Response(DLG_HASHTAG_EXISTS_GLOBAL);
        return;
       }
+     EditTag.SetName(txtName);
      Close(DialogResult::OK);
     } break;
    default: throw L"hashtag type not handled";

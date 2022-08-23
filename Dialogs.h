@@ -108,6 +108,7 @@ class HashTagEditDlg : public ADialog
  HashTagEditDlg();
 
  DialogResult Show(AWnd *parent);
+ DialogResult Show(AWnd *parent, HashTag const &ht);
 
  virtual void OnInitDialog();
  virtual WMR  OnCommand(int child, HWND hChildWnd);
