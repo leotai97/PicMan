@@ -352,7 +352,7 @@ void FolderOpenDlg::OnCancel()
 
 void FolderOpenDlg::OnDrop()
 {
- String txt; 
+ String txt, count;
 
  if (m_FolderItem == nullptr)
   {
@@ -360,7 +360,18 @@ void FolderOpenDlg::OnDrop()
    return;
   }
 
- txt = App->Prose.TextArgs(DLG_FOLDER_DELETE, m_FolderItem->Folder(), String::Decimal((int)m_FolderItem->Pictures.size()));
+ if (Wnd->CurrentFolder() != nullptr)
+  {
+   if (Wnd->CurrentFolder()->ID() == m_FolderItem->ID())
+    {
+     App->Response(App->Prose.TextArgs(DLG_FOLDER_DELETE_OPEN, m_FolderItem->Folder()));
+     return;
+    }
+  }
+
+ count = String::Decimal((int)m_FolderItem->Pictures.size());
+
+ txt = App->Prose.TextArgs(DLG_FOLDER_DELETE, m_FolderItem->Folder(), count);
 
  if (App->Question(txt, MB_YESNO) != DialogResult::Yes)
    return;
@@ -561,8 +572,6 @@ WMR HashTagEditDlg::OnCommand(int child, HWND hChild)
 
 void HashTagEditDlg::OnOK()
 {
- HashTag fht;
- HashTag ght;
  String txtName;
  String msg;
 
@@ -584,18 +593,16 @@ void HashTagEditDlg::OnOK()
   {
    case HashTag::HashTagType::FolderTag:
     {
-     fht = EditTag;
-     if (fht.Folder()->UpdateFolderHashTag(fht, txtName) == false) 
+     if (EditTag.Folder()->UpdateFolderHashTag(&EditTag, txtName) == false) 
       {
-       App->Response(App->Prose.TextArgs(DLG_HASHTAG_EXISTS, txtName, fht.Folder()->Folder()));
+       App->Response(App->Prose.TextArgs(DLG_HASHTAG_EXISTS, txtName, EditTag.Folder()->Folder()));
        return;
       }
      Close(DialogResult::OK);
     } break;
    case HashTag::HashTagType::GlobalTag:
     {
-     ght = EditTag;
-     if (App->UpdateGlobalHashTag(ght, txtName) == false)
+     if (App->UpdateGlobalHashTag(EditTag, txtName) == false)
       {
        App->Response(DLG_HASHTAG_EXISTS_GLOBAL);
        return;
@@ -1123,11 +1130,12 @@ void HashTagSubDlg::OnAdd()
 
  SelectHashTagCtrl.PictureMap.insert(std::pair<int,HashTag>(sfht.ID(), HashTag(sfht.ID(), sfht.ToString(), Folder, HashTag::HashTagType::PictureTag)));
  SelectHashTagCtrl.ProcessTags(ClientSize().Width);
-
+ sz.Width = ClientSize().Width;
+ sz.Height = SelectHashTagCtrl.GetHashTagHeight();
+ SelectHashTagCtrl.SetSize(sz);
  sz.Width = Width();
  sz.Height = SelectHashTagCtrl.Top() + SelectHashTagCtrl.Height() + 37;  
  SetSize(sz);
-
 }
 
 void HashTagSubDlg::OnKeyDown(int child, KeyEventArgs const &e) // Handles txtAdd.KeyDown

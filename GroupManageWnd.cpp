@@ -122,9 +122,8 @@ void GroupManageWnd::OnSize()
 WMR GroupManageWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
 {
  NMHDR *nm=(LPNMHDR)lParam;
- NMLISTVIEW *nlv;
  WMR ret=WMR::Zero;
- int id;
+ int ndx, id;
 
  ret = ADialog::OnNotify(hChild, child, code, lParam);
 
@@ -137,15 +136,14 @@ WMR GroupManageWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
     {
      if (hChild == m_List.Handle() && m_List.NotifyIsOff()==false)
       {
-      nlv = (NMLISTVIEW *)lParam;
-       if (m_List.IsItemSelected(nlv->iItem) == true)
+       ndx = m_List.GetSelectedItem();
+       if (ndx >= 0)
         {
-         id = m_List.GetItemParam(nlv->iItem); 
+         id = m_List.GetItemParam(ndx); 
          SetPictureViewer(App->Pictures[id]);
-        }
-      }
+        }   
+      }   
     } break;
-
   }
  return ret;
 }
@@ -410,6 +408,7 @@ void GroupManageWnd::OnCut()
 
 void GroupManageWnd::OnMoveBefore()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  ImageParser  *target, *item;
  std::vector<ImageParser *> list;
  int i, id;
@@ -417,6 +416,8 @@ void GroupManageWnd::OnMoveBefore()
  if (m_List.SelectedItemsCount() == 0) { App->Response(L"Nothing selected"); return; }
  if (m_List.SelectedItemsCount() > 1)  { App->Response(L"Select a Single Item To Paste Before"); return; }
 
+ wait.BeginWait();
+
  target = m_List.SelectedImage();
 
  for(i = 0; i < m_List.Count(); i++)
@@ -435,10 +436,13 @@ void GroupManageWnd::OnMoveBefore()
  Reload(list);
  m_listCut.clear();
  EnableButtons();
+
+ wait.EndWait();
 }
 
 void GroupManageWnd::OnMoveAfter()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  ImageParser  *target, *item;
  std::vector<ImageParser *> list;
  int i, id;
@@ -446,6 +450,8 @@ void GroupManageWnd::OnMoveAfter()
  if (m_List.SelectedItemsCount() == 0) { App->Response(L"Nothing selected"); return; }
  if (m_List.SelectedItemsCount() > 1)  { App->Response(L"Select a Single Item To Paste After"); return; }
 
+ wait.BeginWait();
+
  target = m_List.SelectedImage();
 
  for(i = 0; i < m_List.Count(); i++)
@@ -464,6 +470,7 @@ void GroupManageWnd::OnMoveAfter()
  Reload(list);
  m_listCut.clear();
  EnableButtons();
+ wait.EndWait();
 }
 
 void GroupManageWnd::OnCancelMove()

@@ -537,7 +537,7 @@ void HashTagSelectCtrl::OnMenuDelete() // Handles mnuDelete.Click
        if (PictureMap.count(dl.ID())>0)
          PictureMap.erase(dl.ID());
       }
-     EditHashTag->Folder()->DropHashTag(EditHashTag);  // fht is deconstructed
+     EditHashTag->Folder()->DropHashTag(EditHashTag);
      RemoveFolderHashTag(EditHashTag);                 // have remove last because EditHashTag points to this
      Refresh();
      } break;

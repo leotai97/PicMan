@@ -15,6 +15,7 @@ void GroupShowWnd::OnInitDialog()
 {
 
  ADialog::OnInitDialog();
+
  m_TB.Create(this, 10);
  m_TB.AddItem(IDB_DETAILS, IDB_DETAILS, L"Switch List To Details");
  m_TB.AddItem(IDB_ICONS, IDB_ICONS, L"Switch List To Icons");
@@ -123,9 +124,8 @@ void GroupShowWnd::OnSize()
 WMR GroupShowWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
 {
  NMHDR *nm=(LPNMHDR)lParam;
- NMLISTVIEW *nlv;
  WMR ret=WMR::Zero;
- int id;
+ int ndx, id;
 
  ret = ADialog::OnNotify(hChild, child, code, lParam);
 
@@ -143,10 +143,10 @@ WMR GroupShowWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
     {
      if (hChild == m_HTLV.List.Handle() && m_HTLV.List.NotifyIsOff()==false)
       {
-      nlv = (NMLISTVIEW *)lParam;
-       if (m_HTLV.List.IsItemSelected(nlv->iItem) == true)
+       ndx = m_HTLV.List.GetSelectedItem();
+       if (ndx >= 0)
         {
-         id = m_HTLV.List.GetItemParam(nlv->iItem); 
+         id = m_HTLV.List.GetItemParam(ndx); 
          SetPictureViewer(App->Pictures[id]);
         }
       }

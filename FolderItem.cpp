@@ -81,23 +81,23 @@ HashTag FolderItem::AddHashTag(String const &s)
  return ht;
 }
 
-bool FolderItem::UpdateFolderHashTag(HashTag &ht, String const &s)
+bool FolderItem::UpdateFolderHashTag(HashTag *ht, String const &s)
 {
- if (String::Compare(s,ht.Name()) == 0) 
+ if (String::Compare(s,ht->Name()) == 0) 
    return false; // no change
 
  for(const auto &it : FolderHashTags)
   {
-   if (it.second.ID() != ht.ID() && String::Compare(s, it.second.Name())==0) 
+   if (it.second.ID() != ht->ID() && String::Compare(s, it.second.Name())==0) 
      return false; // duplication
   }
 
  MySqlCommand cmd(L"UPDATE hashtag_folder SET name=@s WHERE hashtag_id=@i;", DB->Con());
  cmd.Parameters.Add(new MySqlParameter(L"@s", s));
- cmd.Parameters.Add(new MySqlParameter(L"@i", ht.ID()));
+ cmd.Parameters.Add(new MySqlParameter(L"@i", ht->ID()));
  cmd.ExecuteNonQuery();
  cmd.Dispose();
- ht.SetName(s);
+ ht->SetName(s);
 
  return true;
 }
@@ -1028,22 +1028,25 @@ void BaseItem::Load()
 
 void BaseItem::RemoveFolder(int id)
 {
- String q;
+ std::vector<String> q;
 
  if (Folders.count(id) == 0) throw L"Folder not in map";
 
- q =  L"DELETE FROM hashtag_folder WHERE folder_id=@id; ";
- q += L"DELETE From folder WHERE folder_id=@id; ";
- q += L"DELETE From folder_site WHERE folder_id=@id; ";
- q += L"DELETE FROM picture_folder_hashtag WHERE picture_id IN (SELECT picture_id FROM picture WHERE folder_id=@id); ";
- q += L"DELETE FROM picture_global_hashtag WHERE picture_id IN (SELECT picture_id FROM picture WHERE folder_id=@id); ";
- q += L"DELETE FROM picture WHERE folder_id=@id; ";
- q += L"DELETE FROM folder_site WHERE folder_id=@id; ";
+ q.push_back(L"DELETE FROM hashtag_folder WHERE folder_id=@id;");
+ q.push_back(L"DELETE From folder WHERE folder_id=@id;");
+ q.push_back(L"DELETE From folder_site WHERE folder_id=@id;");
+ q.push_back(L"DELETE FROM picture_folder_hashtag WHERE picture_id IN (SELECT picture_id FROM picture WHERE folder_id=@id);");
+ q.push_back(L"DELETE FROM picture_global_hashtag WHERE picture_id IN (SELECT picture_id FROM picture WHERE folder_id=@id);");
+ q.push_back(L"DELETE FROM picture WHERE folder_id=@id;");
+ q.push_back(L"DELETE FROM folder_site WHERE folder_id=@id;");
 
- MySqlCommand cmd(q, DB->Con());
- cmd.Parameters.Add(new MySqlParameter(L"@id", id));
- cmd.ExecuteNonQuery();
- cmd.Dispose();
+ for(const auto &sql : q)
+  {
+   MySqlCommand cmd(sql, DB->Con());
+   cmd.Parameters.Add(new MySqlParameter(L"@id", id));
+   cmd.ExecuteNonQuery();
+   cmd.Dispose();
+  }
 
  delete Folders.at(id);
  Folders.erase(id);

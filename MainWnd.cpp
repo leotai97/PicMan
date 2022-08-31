@@ -142,6 +142,7 @@ void MainWnd::LoadMainMenu()
 
  top = m_Menu.SubMenu(ID_FILE);
  top->AddMenu(ID_FILE_SETBASEDIRECTORY);
+ top->AddMenu(ID_FILE_SCANBASEFORNEWFOLDERS);
  top->Separator();
  top->AddMenu(ID_FILE_NEWFOLDER);
  top->AddMenu(ID_FILE_OPENFOLDER);
@@ -157,7 +158,6 @@ void MainWnd::LoadMainMenu()
  top->Separator();
  top->AddMenu(ID_FILE_CLOSEFOLDER);
  top->Separator();
- top->AddMenu(ID_FILE_SCANBASEFORNEWFOLDERS);
  top->AddMenu(ID_FILE_REFRESHIMPORTLIST);
  top->Separator();
  top->AddMenu(ID_FILE_EXIT);
@@ -345,10 +345,9 @@ void MainWnd::OnPaint()
 
 WMR MainWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
 {
- NMLISTVIEW *nlv; 
  NMHDR *nm=(LPNMHDR)lParam;
  WMR ret=WMR::Zero;
- int id;
+ int id, ndx;
 
  ret = PopUpWnd::OnNotify(hChild, child, code, lParam);
 
@@ -383,19 +382,19 @@ WMR MainWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
     {
      if (hChild == m_ListPics.Handle() && m_ListPics.NotifyIsOff() == false)
       {
-       nlv = (NMLISTVIEW *)lParam;
-       if (m_ListPics.IsItemSelected(nlv->iItem) == true)
+       ndx = m_ListPics.GetSelectedItem();
+       if (ndx >= 0)
         {
-         id = m_ListPics.GetItemParam(nlv->iItem); 
+         id = m_ListPics.GetItemParam(ndx); 
          SetPictureViewer(&m_PicList, App->Pictures[id]);
         }
       }
      if (hChild == m_ListImport.Handle() && m_ListImport.NotifyIsOff() == false)
       {
-       nlv = (NMLISTVIEW *)lParam;
-       if (m_ListImport.IsItemSelected(nlv->iItem) == true)
+       ndx = m_ListImport.GetSelectedItem();
+       if (ndx >= 0)
         {
-         id = m_ListImport.GetItemParam(nlv->iItem); 
+         id = m_ListImport.GetItemParam(ndx); 
          SetPictureViewer(&m_PicList, App->Pictures[id]);
         }
       }
@@ -497,7 +496,7 @@ void MainWnd::ShowMenuListPics(Point const &pt)
  else
   {
    menu.SetEnabledState(ID_POPUP_LIST_ADD_SELECTED_GROUP, false);
-   menu.SetEnabledState(ID_POPUP_IMPORT_MOVE_NEW_GROUP, false);
+   menu.SetEnabledState(ID_POPUP_LIST_MOVE_NEW_GROUP, false);
   }
  
  menu.ShowContextMenu(this, pt);
@@ -857,7 +856,7 @@ void MainWnd::mnuFileNewFolder()
 {
  DirDlg dlg(m_CurrentBase->DirPath(), DirDlg::enumWhichDir::NewFolder);
  DialogResult r;
- String msg, strDir, strFin;
+ String strDir, name;
  FolderItem *item;
 
 
@@ -879,19 +878,17 @@ void MainWnd::mnuFileNewFolder()
  else
    return;
 
- strFin = m_CurrentBase->DirPath();
- strFin += L"\\";
- strFin += strDir;
-
- if (Utility::DirectoryExists(strFin)==false)
+ if (Utility::DirectoryExists(strDir)==false)
   {
-   if (Utility::DirectoryCreate(strFin, true)==false)
+   if (Utility::DirectoryCreate(strDir, true)==false)
     {
      return;
     }
   } 
 
- item = new FolderItem(strDir, m_CurrentBase);
+ name = Utility::DirectoryName(strDir);
+
+ item = new FolderItem(name, m_CurrentBase);
 
  OpenFolder(item);
 }
@@ -939,7 +936,7 @@ void MainWnd::mnuFileActionsMaintainFolderHashtags()
 void MainWnd::mnuFileActionsReloadFolder()
 {
  std::vector<ImageParser *> list;
- WaitCursor wait;
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
 
  if (m_CurrentFolder == nullptr)
   {
@@ -948,6 +945,8 @@ void MainWnd::mnuFileActionsReloadFolder()
   }
  if (App->Question(MAIN_FOLDER_RELOAD, MB_OKCANCEL) != DialogResult::OK)
    return;
+
+ wait.BeginWait();
 
  m_ListPics.Clear();
  m_TreeGroup.Clear();
@@ -984,6 +983,7 @@ void MainWnd::mnuFileActionsReloadFolder()
  RefreshImports();    // put all IsImport images in App->Pictures into m_ListImport    
  RefreshBoth();       // put non import items into m_ListPics and either m_TreePics or m_TreeHashTags
 
+ wait.EndWait();
 }
 
 void MainWnd::mnuFileActionsReloadFolderThumbnails()
@@ -992,7 +992,7 @@ void MainWnd::mnuFileActionsReloadFolderThumbnails()
  String msg;
  int i, msgs;
  ProgressBar pgb(&m_Status,1);
- WaitCursor wait;
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
 
  if (m_CurrentFolder == nullptr) 
   { 
@@ -1003,6 +1003,8 @@ void MainWnd::mnuFileActionsReloadFolderThumbnails()
  if (App->Question(App->Prose.TextArgs(MAIN_FOLDER_RELOAD_THUMB, m_CurrentFolder->Folder()), MB_OKCANCEL)!=DialogResult::OK)
    return;
  
+ wait.BeginWait();
+
  m_Status.SetText(0, L"Reloading Thumbnails");
 
  for(const auto &pi : m_CurrentFolder->Pictures)
@@ -1040,13 +1042,11 @@ void MainWnd::mnuFileActionsReloadFolderThumbnails()
        App->Response(msg);
        msgs++;
       }
-     else
-      {
-       App->Response(MAIN_PICTURES_FAILED_LOAD);
-      }
     }
    pgb.Progress();
   }
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuFileActionsRenumberFilesInFolder()
@@ -1056,6 +1056,7 @@ void MainWnd::mnuFileActionsRenumberFilesInFolder()
  std::vector<ImageParser *> list;
  std::vector<String> listDir;
  ImageParser::SortChoices sort;
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  bool bAsc;
  String msg;
  int i;
@@ -1097,6 +1098,8 @@ void MainWnd::mnuFileActionsRenumberFilesInFolder()
  else
    return;
 
+ wait.BeginWait();
+
  for(const auto &p : App->Pictures)
   {
    if (p.second->IsImport()==false)
@@ -1119,6 +1122,7 @@ void MainWnd::mnuFileActionsRenumberFilesInFolder()
   }
 
  RefreshBoth();
+ wait.EndWait();
 }
 
 void MainWnd::mnuFileActionsRenameFilesToHashtags()
@@ -1128,6 +1132,7 @@ void MainWnd::mnuFileActionsRenameFilesToHashtags()
  std::vector<ImageParser *> listMisc;
  std::vector<ImageParser *> listRenumber;
  std::vector<ImageParser *> listAll;
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  String strHTGroup;
  String msg;
  std::vector<String> sort;
@@ -1153,6 +1158,8 @@ void MainWnd::mnuFileActionsRenameFilesToHashtags()
   }
  if (App->Question(App->Prose.TextArgs(MAIN_RENAME_TO_HASHTAGS, m_CurrentFolder->Folder()), MB_YESNO) != DialogResult::Yes) 
    return;
+
+ wait.BeginWait();
 
  std::sort(listAll.begin(), listAll.end(), ImageParserSorter(ImageParser::SortChoices::FileName, true));
  for(const auto &px : listAll)
@@ -1234,6 +1241,8 @@ void MainWnd::mnuFileActionsRenameFilesToHashtags()
    i++;
   }
  RefreshBoth();
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuFileCloseFolder()
@@ -1249,6 +1258,7 @@ void MainWnd::mnuFileScanBaseForNewFolders()
 
 void MainWnd::mnuFileRefreshImportList()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<ImageParser *> keep;
  String msg;
 
@@ -1262,6 +1272,8 @@ void MainWnd::mnuFileRefreshImportList()
    App->Response(App->Prose.TextArgs(MAIN_IMPORT_CHANGE, m_CurrentImportDir, m_Menu.GetMenuTree(ID_TOOL_SETIMPORTDIRECTORY)));
    return;
   }
+
+ wait.BeginWait();
 
  for(const auto &p : App->Pictures)
   {
@@ -1287,6 +1299,8 @@ void MainWnd::mnuFileRefreshImportList()
 
  ReloadImageList();
  RefreshImports();
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuFileExit()
@@ -1504,7 +1518,7 @@ void MainWnd::mnuViewAllGroups()
    for (const auto &item : groupNodes)
     {
      #ifdef _DEBUG
-     if (App->Pictures.count(item.Tag) > 0) throw L"Tag has to be ImageParser ID";   
+     if (App->Pictures.count(item.Tag) == 0) throw L"Tag has to be ImageParser ID";   
      #endif
      px = App->Pictures[item.Tag];
      list.push_back(px);
@@ -1639,7 +1653,7 @@ void MainWnd::mnuViewSlideShow()
 }
 void MainWnd::mnuViewAllByGlobalHashtag()
 {
- WaitCursor *wait;
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  ProgressBar pgb(&m_Status, 1);
  GroupShowWnd wnd;
  std::vector<ImageParser *> save;
@@ -1661,7 +1675,8 @@ void MainWnd::mnuViewAllByGlobalHashtag()
   
  ht = dlg.SelectedHashTag();
 
- wait = new WaitCursor();
+ wait.BeginWait();
+
  m_Status.SetText(0, m_Menu.GetMenuTree(ID_VIEW_VIEWALLBYGLOBALHASHTAG));
 
  if (m_CurrentBase->Folders.size() == 0)
@@ -1685,7 +1700,6 @@ void MainWnd::mnuViewAllByGlobalHashtag()
 
  if (list.size() == 0)
   {
-   delete wait;
    App->Response(COMMON_NO_ITEMS_FOUND);
    m_Status.SetText(0, L"");
    return;
@@ -1704,12 +1718,10 @@ void MainWnd::mnuViewAllByGlobalHashtag()
    m_ImageThumbs.Add(px->Thumb(), px->ID());
   }
 
- delete wait;
+ wait.EndWait();
 
  wnd.Show(this, GetImageList(), list, HashTagSelectCtrl::enumFilterStyle::NoFilter);
-
- wait = new WaitCursor();
-
+ 
  il.Destroy();
 
  for (const auto &px : list)
@@ -1725,7 +1737,6 @@ void MainWnd::mnuViewAllByGlobalHashtag()
    App->Pictures.insert(std::pair<int, ImageParser *>(px->ID(), px));
   }
 
- delete wait;
  m_Status.SetText(0, L"");
 }
 
@@ -1933,6 +1944,7 @@ void MainWnd::mnuPopUpListAddToSelectedGroup()
 
 void MainWnd::mnuPopUpListMoveToNewGroup()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<ImageParser *> list;
  std::vector<int> indices;
  std::vector<TreeNode> nodes;
@@ -1971,6 +1983,8 @@ void MainWnd::mnuPopUpListMoveToNewGroup()
  SetPictureViewer(&m_PicList, nullptr);
  SetPictureViewer(&m_PicTree, nullptr);
 
+ wait.BeginWait();
+
  for(const auto &index : indices)
   {
    tag = m_ListPics.GetItemParam(index);
@@ -1989,10 +2003,12 @@ void MainWnd::mnuPopUpListMoveToNewGroup()
 
  RefreshFileGroupList();
 
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpListReplaceFolderHashTag()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<HashTag> list;
  std::vector<int> selected;
  HashTagSelectorDlg dlg;
@@ -2018,6 +2034,8 @@ void MainWnd::mnuPopUpListReplaceFolderHashTag()
    App->Response(MAIN_HASHTAGS_NOT_SELECTED);
    return;
   }
+
+ wait.BeginWait();
 
  selected = m_ListPics.GetSelectedIndices(); 
 
@@ -2041,10 +2059,13 @@ void MainWnd::mnuPopUpListReplaceFolderHashTag()
   }
 
  RefreshBoth();
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpListAddFolderHashTag()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<HashTag> list;
  std::vector<int> selected;
  HashTagSelectorDlg dlg;
@@ -2071,6 +2092,8 @@ void MainWnd::mnuPopUpListAddFolderHashTag()
    return;
   }
 
+ wait.BeginWait();
+
  selected = m_ListPics.GetSelectedIndices(); 
 
  for (const auto &ndx : selected)
@@ -2093,10 +2116,13 @@ void MainWnd::mnuPopUpListAddFolderHashTag()
   }
 
  RefreshBoth();
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpListAddToSelectedGroupHashTag()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  ImageParser *px;
  TreeNode gn;
  TreeNode ni;
@@ -2130,6 +2156,8 @@ void MainWnd::mnuPopUpListAddToSelectedGroupHashTag()
      listHT.push_back(pht.second);
   }
 
+ wait.BeginWait();
+
  indices = m_ListPics.GetSelectedIndices();
  for(const auto &ndx: indices)
   {
@@ -2147,10 +2175,13 @@ void MainWnd::mnuPopUpListAddToSelectedGroupHashTag()
   }
  
  RefreshBoth();
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpListDeleteSelectedFiles()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  ImageParser *px;
  String q;
  String nl = L"\n";
@@ -2184,6 +2215,8 @@ void MainWnd::mnuPopUpListDeleteSelectedFiles()
 
  if (App->Question(q, MB_OKCANCEL) != DialogResult::OK) return;
 
+ wait.BeginWait();
+
  for(const auto &ndx : indices)
   {
    id = m_ListPics.GetItemParam(ndx);
@@ -2210,6 +2243,8 @@ void MainWnd::mnuPopUpListDeleteSelectedFiles()
  m_Status.SetText(0, App->Prose.TextArgs(MAIN_MOVE_RECYCLE, String::Decimal((int)delIndices.size())));
 
  SetPictureViewer(&m_PicList, nullptr);
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpListSelectAll()
@@ -2307,7 +2342,7 @@ void MainWnd::mnuPopUpImportAddToSelectedGroup()
 
  oGroup = m_TreeGroup.SelectedNode();
 
- if (oGroup.Tag == 0)
+ if (oGroup.Tag != 0)
   {
    oGroup = oGroup.GetParent();
   }
@@ -2420,7 +2455,7 @@ void MainWnd::mnuPopUpImportMoveToList()
  indices = m_ListImport.GetSelectedIndices();
  for(const auto &ndx : indices)
   {
-   id = m_ListImport.GetItemParam(indices[ndx]);
+   id = m_ListImport.GetItemParam(ndx);
    #ifdef _DEBUG
    if (App->Pictures.count(id) == 0) throw L"m_ListImports param not a valid ImageParser id";
    #endif
@@ -2449,6 +2484,7 @@ void MainWnd::mnuPopUpImportMoveToList()
 
 void MainWnd::mnuPopUpImportDeleteSelectedFiles()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<int> indices;
  std::vector<int> delIndices;
  ImageParser *px;
@@ -2481,6 +2517,8 @@ void MainWnd::mnuPopUpImportDeleteSelectedFiles()
 
  if (App->Question(q, MB_OKCANCEL) != DialogResult::OK) return;
 
+ wait.BeginWait();
+
  for(const auto &ndx : indices)
   {
    id = m_ListImport.GetItemParam(ndx);
@@ -2504,10 +2542,11 @@ void MainWnd::mnuPopUpImportDeleteSelectedFiles()
 
  m_ListImport.RemoveItems(delIndices);
 
-  m_Status.SetText(0, App->Prose.TextArgs(MAIN_MOVE_RECYCLE, String::Decimal((int)delIndices.size())));
+ m_Status.SetText(0, App->Prose.TextArgs(MAIN_MOVE_RECYCLE, String::Decimal((int)delIndices.size())));
 
  m_PicList.SetItem(nullptr); 
 
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpImportSelectAll()
@@ -2634,6 +2673,7 @@ void MainWnd::mnuPopUpTreeGroupView()
 
 void MainWnd::mnuPopUpTreeGroupFavorite()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  ImageParser *px;
  std::vector<ImageParser *> list;
  std::vector<TreeNode> nodes;
@@ -2672,6 +2712,7 @@ void MainWnd::mnuPopUpTreeGroupFavorite()
 
 void MainWnd::mnuPopUpTreeGroupUnFavorite()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  ImageParser *px;
  std::vector<ImageParser *> list;
  std::vector<TreeNode> nodes;
@@ -2945,6 +2986,7 @@ void MainWnd::mnuPopUpTreeGroupPicMoveToAnother()
 
 void MainWnd::mnuPopUpTreeGroupDelete()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<TreeNode> nodes;
  std::vector<ImageParser *> list;
  TreeNode node;
@@ -2979,6 +3021,8 @@ void MainWnd::mnuPopUpTreeGroupDelete()
    list.push_back(App->Pictures[n.Tag]);
   }
  
+ wait.BeginWait();
+
  for(const auto &px : list)
   {
    if (px->Delete() == false)
@@ -3001,6 +3045,8 @@ void MainWnd::mnuPopUpTreeGroupDelete()
  msg += node.Text;
  msg += L" Moved To Recycle Bin";
  m_Status.SetText(0, msg);
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpTreeGroupPicDelete()
@@ -3083,6 +3129,7 @@ void MainWnd::mnuPopUpTreeGroupPicProps()
 
 void MainWnd::mnuPopUpTreeTagsFavorite()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  ImageParser *px;
  std::vector<ImageParser *> list;
  std::vector<TreeNode> nodes;
@@ -3102,6 +3149,7 @@ void MainWnd::mnuPopUpTreeTagsFavorite()
    group = group.GetParent();
   }
 
+ wait.BeginWait();
  nodes = group.GetNodes();
  pgb.Max(nodes.size());
  for (const auto &n : nodes)
@@ -3122,10 +3170,12 @@ void MainWnd::mnuPopUpTreeTagsFavorite()
  msg += group.Text;
  msg += L"' Made Favorite";
  m_Status.SetText(0, msg);
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpTreeTagsUnFavorite()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  ImageParser *px;
  std::vector<ImageParser *> list;
  std::vector<TreeNode> nodes;
@@ -3144,6 +3194,8 @@ void MainWnd::mnuPopUpTreeTagsUnFavorite()
   {
    group = group.GetParent();
   }
+
+ wait.BeginWait();
 
  nodes = group.GetNodes();
  pgb.Max(nodes.size());
@@ -3166,10 +3218,12 @@ void MainWnd::mnuPopUpTreeTagsUnFavorite()
  msg += L"' Favorite Removed";
  m_Status.SetText(0, msg);
 
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpTreeTagsGroupTagsUpdate()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<TreeNode> nodes;
  TreeNode group;
  HashTagSelectorDlg dlg;
@@ -3197,6 +3251,7 @@ void MainWnd::mnuPopUpTreeTagsGroupTagsUpdate()
  r = dlg.Show(this, m_CurrentFolder, px->Item());
  if (r == DialogResult::OK)
   {
+   wait.BeginWait();
    for(const auto &ni : nodes)
     {
      px = App->Pictures[ni.Tag];
@@ -3212,11 +3267,13 @@ void MainWnd::mnuPopUpTreeTagsGroupTagsUpdate()
    msg += group.Text;
    msg += L"' HashTags Updated";
    m_Status.SetText(0, msg);
+   wait.EndWait();
   }
 }
 
 void MainWnd::mnuPopUpTreeTagsGroupTagsRemove()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<TreeNode> nodes;
  std::vector<HashTag> list;
  ImageParser *px;
@@ -3239,6 +3296,8 @@ void MainWnd::mnuPopUpTreeTagsGroupTagsRemove()
  if (App->Question(msg, MB_OKCANCEL) != DialogResult::OK)
    return;
 
+ wait.BeginWait();
+
  nodes = group.GetNodes();
 
  for(const auto  &ni : nodes)
@@ -3255,6 +3314,8 @@ void MainWnd::mnuPopUpTreeTagsGroupTagsRemove()
  msg += group.Text;
  msg += L"' Moved Back To List";
  m_Status.SetText(0, msg);
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpTreeTagsGroupView()
@@ -3294,6 +3355,7 @@ void MainWnd::mnuPopUpTreeTagsGroupView()
 
 void MainWnd::mnuPopUpTreeTagsGroupDelete()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<TreeNode> nodes;
  std::vector<ImageParser *> list;
  TreeNode group;
@@ -3321,7 +3383,9 @@ void MainWnd::mnuPopUpTreeTagsGroupDelete()
    #endif
    list.push_back(App->Pictures[n.Tag]);
   }
- 
+
+ wait.BeginWait(); 
+
  for(const auto &px : list)
   {
    if (px->Delete() == false)
@@ -3341,6 +3405,8 @@ void MainWnd::mnuPopUpTreeTagsGroupDelete()
  msg += L" ";
  msg += App->Prose.TextArgs(COMMON_SUCCESS, group.Text);
  m_Status.SetText(0, msg);
+
+ wait.EndWait();
 }
 
 void MainWnd::mnuPopUpTreeTagsItemTagsUpdate()
@@ -3630,7 +3696,7 @@ void MainWnd::OpenFolder(FolderItem *folder)
 {
  std::vector<ImageParser *> list;
  DialogResult r;
- WaitCursor wait;
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  String msg;
  int i;
 
@@ -3724,6 +3790,7 @@ void MainWnd::OpenFolder(FolderItem *folder)
 
 void MainWnd::CloseFolder()
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  std::vector<ImageParser *> list;
 
  SetPictureViewer(&m_PicList, nullptr);
@@ -3756,6 +3823,7 @@ void MainWnd::CloseFolder()
 
 std::vector<ImageParser *> MainWnd::ProcessFolder(FolderItem *folder)
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
  std::vector<ImageParser *> listPictures;
  std::vector<ImageParser *> listFinal;
  std::vector<String> listDir;
@@ -3767,11 +3835,12 @@ std::vector<ImageParser *> MainWnd::ProcessFolder(FolderItem *folder)
 
  if (Utility::DirectoryExists(sDir) == false)
   {
-   msg = App->Prose.TextArgs(MAIN_FOLDER_DIR_NOT_FOUND, m_CurrentBase->DirPath(), App->Prose.Text(ID_FILE_SCANBASEFORNEWFOLDERS));
+   msg = App->Prose.TextArgs(MAIN_FOLDER_DIR_NOT_FOUND, sDir, App->Prose.Text(ID_FILE_SCANBASEFORNEWFOLDERS));
    App->Response(msg);
    return listFinal;  // empty list
   }
 
+ wait.BeginWait();
  m_Status.SetText(0,App->Prose.TextArgs(MAIN_FOLDER_SCAN, sDir));
 
  listDir = Utility::GetFileNames(sDir, L"*.jpg");
@@ -3805,11 +3874,13 @@ std::vector<ImageParser *> MainWnd::ProcessFolder(FolderItem *folder)
  msg += L" pictures total";
  m_Status.SetText(0, msg);
 
+ wait.EndWait();
  return listFinal;
 }
  
 void MainWnd::ProcessImportDirectory(String const &strPath) 
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  std::map<String, ImageParser *> existing;
  std::vector<ImageParser *> listTemp;
  std::vector<ImageParser *> listFinal;
@@ -4208,10 +4279,11 @@ void MainWnd::RefreshHashTagGroupTree()
 
 bool MainWnd::MoveToList(std::vector<ImageParser *> const &incoming, bool isImported)
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  std::vector<ImageParser *> tempList;
  DialogResult dr;
- String strFile, newFile;
- String msg;
+ PictureItem *pi;
+ String strFile, newFile, sw;
  int i, hi;
 
  if (incoming.size()==0)
@@ -4244,13 +4316,15 @@ bool MainWnd::MoveToList(std::vector<ImageParser *> const &incoming, bool isImpo
       tempList.push_back(pi.second->Picture());
    }
  }
+
 if (tempList.size() > 0) 
  {
   // obtain last file by sorting desc
   std::sort(tempList.begin(), tempList.end(), ImageParserSorter(ImageParser::SortChoices::FileName, false)); 
   if (strFile.Length() > 0)
    {
-    if (String::TryIntParse(tempList[0]->FileName().Substring(strFile.Length()), &i) == false) throw L"failed to extract file number";
+    sw = tempList[0]->NoExtension().Substring(strFile.Length());
+    if (String::TryIntParse(sw, &i) == false) throw L"failed to extract file number";
     i += 1; 
    }
   else
@@ -4283,7 +4357,7 @@ else
     }
    else
     {
-     newFile = String::Decimal(i);
+     newFile = String::Decimal(i, 3);
      newFile += L".jpg";
      if (item->RenameByFileToDir(newFile, m_CurrentFolder->FolderPath()) == false) 
       {
@@ -4291,15 +4365,21 @@ else
        return false;
       }
      if (isImported == true)
+      {
        item->SetImport(false);
+       pi = new PictureItem(m_CurrentFolder, item);
+       m_CurrentFolder->Pictures.insert(std::pair<int, PictureItem *>(pi->ID(), pi));
+      }
     }
    i++;
   }
+
  return true;
 }
 
 void MainWnd::MoveItemsToGroup(TreeNode &group, PicListView *ctrl, bool isImported)
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  std::vector<ImageParser *> list;
  std::vector<int> indices;
  ImageParser *p;
@@ -4336,6 +4416,7 @@ void MainWnd::MoveItemsToGroup(TreeNode &group, PicListView *ctrl, bool isImport
 
 bool MainWnd::ReorderList(String const &strGroup, std::vector<ImageParser *> list, FolderItem *folder, bool isImported)
 {
+ WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  ProgressBar pgb(&m_Status, 1);
  String path;
  String fldr;

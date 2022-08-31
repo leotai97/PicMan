@@ -284,7 +284,7 @@ class DirDlg : public ADialog
 
  DialogResult Show(AWnd *parent);
 
- String Directory() { return m_strDirOut; }
+ String Directory() { return m_strDirOut; } // full path
  
  protected:
 

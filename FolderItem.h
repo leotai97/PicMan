@@ -34,7 +34,7 @@ class FolderItem
 
  String GetFolderDir(); 
  HashTag AddHashTag(String const &s);
- bool UpdateFolderHashTag(HashTag &ht, String const &s);
+ bool UpdateFolderHashTag(HashTag *ht, String const &s);
  void DropHashTag(HashTag *ht); // ht is deleted
  bool FolderHashTagInUse(HashTag const &fht);
  void LoadInfo();
