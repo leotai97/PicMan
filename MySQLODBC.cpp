@@ -232,12 +232,7 @@ DateTime MySqlData::GetDateTime()
  switch(m_CType)
   {
    case SQL_C_TIMESTAMP:
-     val.Year=m_DT.year;
-     val.Month=m_DT.month;
-     val.Day=m_DT.day;
-     val.Hour=m_DT.hour;
-     val.Minute=m_DT.minute;
-     val.Second=m_DT.second;
+     val = DateTime(m_DT.year, m_DT.month, m_DT.day, m_DT.hour, m_DT.minute, m_DT.second);
      break;
    default:
      throw L"Conversion not handled";   
@@ -480,11 +475,11 @@ MySqlParameter::MySqlParameter(String const &name, String const &val)
 MySqlParameter::MySqlParameter(String const &name, DateTime const &val)
 {
  m_Name=name;
- m_DateVal.year=val.Year;
- m_DateVal.month=val.Month;
- m_DateVal.day=val.Day;
- m_DateVal.hour=val.Hour;
- m_DateVal.minute=val.Minute;
+ m_DateVal.year=val.Year();
+ m_DateVal.month=val.Month();
+ m_DateVal.day=val.Day();
+ m_DateVal.hour=val.Hour();
+ m_DateVal.minute=val.Minute();
  m_DateVal.fraction=0;
  m_SQLType = SQL_C_TIMESTAMP;
  m_Len=sizeof(SQL_TIMESTAMP);

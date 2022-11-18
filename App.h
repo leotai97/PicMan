@@ -83,7 +83,6 @@ class PicManApp : public Application
 
  int m_PictureID;
 
-
 };
 
 class MySqlConnection;

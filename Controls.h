@@ -151,3 +151,304 @@ class HashTagEditCtrl : public PanelWnd
 
  ButtonWnd m_Add;
 };
+
+// ///////////////////////////////
+
+class SpreadSheetItem
+{
+ public:
+ SpreadSheetItem()
+ {
+  Image = nullptr;
+  Match = 0.0F;
+  Selected = false;
+  Moved = false;
+  Deleted = false;
+  ID = -1;
+ }
+ SpreadSheetItem(ImageParser *img)
+ {
+  Image = img;
+  Match = 0.0F;
+  Selected = false;
+  Moved = false;
+  Deleted = false;
+  ID = img->ID();
+ }
+ 
+ ImageParser *Image;
+ float        Match;
+ bool         Selected;
+ bool         Moved;
+ bool         Deleted;
+ int          ID;
+};
+
+class SpreadSheetRow
+{
+ public:
+ SpreadSheetRow()
+ {
+  Image = nullptr;
+  TotalMatches = 0.0F;
+  Selected = false;
+  Moved = false;
+  Deleted = false;
+  ID = -1;
+ }
+ SpreadSheetRow(ImageParser *img)
+ {
+  Image = img;
+  TotalMatches = 0.0F;
+  Selected = false;
+  Moved = false;
+  Deleted = false;
+  ID = img->ID();
+ }
+
+ std::vector<SpreadSheetItem *>SelectedItems();
+ void SelectAll();
+ void SelectNone(); 
+
+ ImageParser *Image;
+ std::vector<SpreadSheetItem *> Matches;
+ float TotalMatches;
+ bool Selected;
+ bool Moved;
+ bool Deleted;
+ int  ID;
+};
+
+class SpreadSheetDlg;
+
+class SpreadSheet : public PanelWnd
+{
+ public:
+ SpreadSheet();
+~SpreadSheet();
+
+ void SetHSPos(int pos) { m_HSPos = pos; Refresh(); }
+ void SetVSPos(int pos) { m_VSPos = pos; Refresh(); }
+ void SetOwner(SpreadSheetDlg *owner) { m_Owner = owner; }
+ Size ItemSize() { return m_ItemSize; }
+
+ std::vector<SpreadSheetItem *> SelectedItems();
+
+ void SelectNone();
+ void SelectAll(ImageParser *row);
+ bool Changed() { return m_Changed; }
+
+ protected:
+ 
+ virtual void OnMouseDown(MouseEventArgs const &m);
+ virtual void OnMouseWheel(MouseEventArgs const &m);
+ virtual WMR OnContextMenu(HWND hChild, Point const &pt);
+ virtual WMR OnCommand(int id, HWND hChild);
+ virtual void OnPaint(HDC hDC);
+
+ void OnMatchNewGroup();        // selected matches moved to new group
+ void OnMatchNewHashTag();      // hashtags assigned to selected matches
+ void OnMatchExistingGroup();   // matches moved to existing group
+ void OnMatchExistingHashTag(); // existing hashtag set assigned to matches
+ void OnMatchRowGroup();        // matches added to row's group
+ void OnMatchRowHashTag();      // row's hashtags assigned to selected matches
+ 
+ void OnRowGroup();           // row added to existing group
+ void OnRowHashTag();         // rows hashtags set to existing hashtag set
+ void OnRowMatchGroup();      // row added to 1st match's group
+ void OnRowMatchHashTag();    // rows hashtags set to 1st match
+
+ void OnBothNewGroup();       // both row and selected matches to new group
+ void OnBothAssignHashTags(); // assign hashtags to row and selected matches
+ void OnProperties();
+ void OnDelete();
+
+ void ReplaceMatches(std::vector<SpreadSheetItem *> const &matches);
+ void ReplaceSelectedRow();
+
+ void mnuSortListName(); 
+ void mnuSortListNameNmbr();
+ void mnuSortListWidth();
+ void mnuSortListHeight();
+ void mnuSortListWidthDivHeight();
+ void mnuSortListRGBColors();
+ void mnuSortListBorderColorAverage();
+ void mnuSortListDateAdded();
+ void mnuSortListFileSize();
+ void mnuSortListGlobalHashTags();
+ void mnuSortListFolderHashTags();
+
+ bool Delete(std::vector<ImageParser *> const &list);
+
+ SpreadSheetDlg *m_Owner;
+
+ int m_VSPos;
+ int m_HSPos;
+
+ bool m_RowImageSelected;  // if true only a row's image is selected, false and a match is selected
+ int  m_SelectedRow;
+ int  m_SelectedCol;
+ 
+ Size m_ItemSize;
+
+ HFONT  m_Font;
+ HPEN   m_Pen;  // selection rectangle
+ 
+ Gdiplus::Brush *m_Red;
+ Gdiplus::Brush *m_White;
+ Gdiplus::Brush *m_Green;
+
+ ImageList m_ImageList;
+
+ std::map<int, int> m_DeleteList;
+ 
+ bool m_Changed; // mainwnd needs to refresh 
+};
+
+class SpreadSheetDlg : public ADialog
+{
+ public:
+
+ SpreadSheetDlg(){};
+~SpreadSheetDlg();
+
+ void Show(AWnd *parent);
+
+ std::vector<SpreadSheetRow *> Rows;
+ SpreadSheet Sheet;
+
+ void Sort();
+ void SelectChange(int r, int c){};
+
+ ScrollBar m_VS;  // vertical scroll bar
+ ScrollBar m_HS;  // horizontal scroll bar
+
+ protected: 
+
+ void SizeChildren();
+
+ virtual void OnInitDialog();
+ virtual WMR MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+};
+
+struct // sort item matches by match percentage
+ {
+  bool operator()(SpreadSheetItem *a, SpreadSheetItem *b) const { return a->Match > b->Match; } // high to low
+ } SpreadSheetMatchSort;
+
+struct // sort rows by total matches by match percentage
+ {
+  bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const { return a->TotalMatches > b->TotalMatches; } // high to low
+ } SpreadSheetRowSort;
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::FileName)) < 0;
+  }
+} SpreadSheetRowSortFileName; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::NameWithNumber)) < 0;
+  }
+} SpreadSheetRowSortNameNmbr; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::Height)) < 0;
+  }
+} SpreadSheetRowSortHeight; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::Width)) < 0;
+  }
+} SpreadSheetRowSortWidth; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::Ratio)) < 0;
+  }
+} SpreadSheetRowSortRatio; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::FileDate)) < 0;
+  }
+} SpreadSheetRowSortFileDate; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::FileSize)) < 0;
+  }
+} SpreadSheetRowSortFileSize; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::ColorRGB)) < 0;
+  }
+} SpreadSheetRowSortColorRGB;
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::EdgeAverage)) < 0;
+  }
+} SpreadSheetRowSortEdgeAverage; 
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::GlobalHashTags)) < 0;
+  }
+} SpreadSheetRowSortGlobalHashTags;
+
+struct // sort items by choice
+{
+ bool operator()(SpreadSheetRow *a, SpreadSheetRow *b) const
+  {
+   if (a->Image == nullptr) return true;
+   if (b->Image == nullptr) return false;
+   return PicListView::CompareItems(a->Image->ID(), b->Image->ID(), Utility::AscendDescendColumn(true, (int)ImageParser::SortChoices::FolderHashTags)) < 0;
+  }
+} SpreadSheetRowSortFolderHashTags;
+

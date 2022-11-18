@@ -13,24 +13,51 @@ PicManApp::~PicManApp()
 
 bool PicManApp::Init(HINSTANCE hInst, int nCmdShow, String const &appName, String const &displayName)
 {
+ AFileTextOut logFile;
  LanguageDlg dlg;
  ProseLanguage lang;
+ String logPath;
+ String txt;
  bool ret;
 
  if (Application::Init(hInst, nCmdShow, appName, displayName) == false)
+  {
+    logFile.Write(L"Application::Init Failed, end of log.");
+    logFile.Close();
    return false;
+  }
+
+ logPath = Application::AppLocalPath();
+ logPath += L"\\PicMan.log";
+ logFile.Open(logPath);
+
+ txt = L"PicMan Startup ";
+ txt += DateTime::Now().ToString(DateTime::Format::MDYHMS);
+ logFile.Write(txt);
+ logFile.Write(String::StrDup(L'-', txt.Length()));
+
+ logFile.Write(L"Loading 'PicManOptions.opt' File");
 
  Options.SetName(L"PicManOptions.opt");
+ Options.SetPath(OpenFileDlg::AppDataFolder());
  Options.Load();
+
+ logFile.Write(L"Loading 'PicManOptions.opt' File Success");
+
+ logFile.Write(L"Opening Prose");
 
  if (Prose.OpenProse() == false)
   {
    App->Response(L"Failed to load ProseUnit");
+   logFile.Write(L"Opening Prose Failed, end of log.");
+   logFile.Close();
    return false;
   }
  if (Prose.Languages.size() == 0)
   {
    App->Response(L"Prose data file has no languages");
+   logFile.Write(L"Opening Prose No Languages, end of log");
+   logFile.Close();
    return false;   
   }
 
@@ -48,7 +75,11 @@ bool PicManApp::Init(HINSTANCE hInst, int nCmdShow, String const &appName, Strin
      if (dlg.Show() == DialogResult::OK)
        lang =dlg.Language();
      else
+      {
+       logFile.Write(L"Opening Prose Failed, language not selected, end of log.");
+       logFile.Close();
        return false; // language not selected
+      }
     }
   }
 
@@ -57,22 +88,45 @@ bool PicManApp::Init(HINSTANCE hInst, int nCmdShow, String const &appName, Strin
  Prose.SetLanguage(lang);
  ProseRuntimeClass::LoadReverseKeys(Prose);
 
+ logFile.Write(L"Opening Prose Success.");
+
+ logFile.Write(L"DB Connect");
+
  DB=new DBCon();
  if (DB->Connect(true)==false)
    return false;
 
+ logFile.Write(L"DB Connect Success");
+ logFile.Write(L"Load Global HashTags");
+
  GlobalHashTags = HashTag::LoadGlobalHashTags();
  if (GlobalHashTags.count(1) == 0)
    AddGlobalHashTag(App->Prose.Text(COMMON_FAVORITE));
+
+ logFile.Write(L"Load Global HashTags Success");
+ logFile.Write(L"Load Bases");
  
  Bases = BaseItem::LoadBases();
-  
+
+ logFile.Write(L"Load Bases Success");
+ logFile.Write(L"Register MainWnd Class");
+
  MainWnd::Register(L"MainWndClass");
+
+ logFile.Write(L"Register MainWnd Class Success");
+ logFile.Write(L"Create MainWnd");
+
 
  Wnd=new MainWnd();
  m_Main = (PopUpWnd *)Wnd;
  ret=m_Main->Create(L"MainWndClass", SW_MAXIMIZE); // create main app window
 
+ if (ret == false)
+   logFile.Write(L"Create MainWnd Failed");
+ else
+   logFile.Write(L"Create MainWnd Success");
+
+ logFile.Close();
  return ret; 
 }
 

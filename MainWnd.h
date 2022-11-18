@@ -46,6 +46,8 @@ class MainWnd : public PopUpWnd
 
  void SetPictureViewer(PicView *view, ImageParser *img);
  
+ static void CompareThread(SpreadSheetRow *row, float percent);
+
  ImageList *GetImageList() { return &m_ImageThumbs; }
 
 
@@ -101,6 +103,7 @@ class MainWnd : public PopUpWnd
  void mnuViewAllPicturesAndImports();
  void mnuViewImports();
  void mnuViewAllDuplicates();
+ void mnuViewAllDuplicatesByPercent();
  void mnuViewFolderByGlobalHashtags();
  void mnuViewSlideShow();
  void mnuViewAllByGlobalHashtag();
@@ -209,6 +212,13 @@ class MainWnd : public PopUpWnd
  void ReloadImageList();
  void ProcessImportDirectory(String const &strPath);
 
+ // image moving
+
+ bool MoveToNewGroup(std::vector<ImageParser *> const &list);
+ bool MoveToExistingGroup(std::vector<ImageParser *> const &list);
+ bool MoveToExistingGroup(std::vector<ImageParser *> const &list, String const &groupName);
+ bool ReplaceHashTags(std::vector<ImageParser *> const &list);
+ bool MoveToExistingHashTag(std::vector<ImageParser *> const &list); 
 
  std::vector<ImageParser *> ProcessFolder(FolderItem *folder);
  std::vector<ImageParser *> LoadImages(std::vector<ImageParser *> list);
@@ -251,6 +261,7 @@ class MainWnd : public PopUpWnd
  ImageList   m_ImageThumbs;
 
  std::vector<int> m_PreviousList;
+
  };
 
 class HashTagSet

@@ -4,27 +4,30 @@ class PicColor
 {
  public:
  PicColor();
- PicColor(int nColorKey, int pr, int pg, int pb, int nCount);
+ PicColor(int nColorKey, BYTE pr, BYTE pg, BYTE pb, int nCount);
 ~PicColor(){};
 
  inline void Accumulate() { m_Amount++; }
  inline void Accumulate(int amt) { m_Amount+=amt; }
 
  static int CompareRGB(PicColor *p1, PicColor *p2);
+ static bool EqualRGB(PicColor *p1, PicColor *p2);
+ static bool PercentageRGB(PicColor *p1, PicColor *p2, float percentage);
+
 
  inline int Key() { return m_Key; }
  inline int Amount() { return m_Amount; }
- inline int R() { return m_R; }
- inline int G() { return m_G; }
- inline int B() { return m_B; }
+ inline BYTE R() { return m_R; }
+ inline BYTE G() { return m_G; }
+ inline BYTE B() { return m_B; }
 
  private:
 
  int m_Key;
  int m_Amount;
- int m_R;
- int m_G;
- int m_B;
+ BYTE m_R;
+ BYTE m_G;
+ BYTE m_B;
 };
 
 class FileMoveResult
@@ -109,6 +112,7 @@ class ImageParser
 
  int CompareRGB(ImageParser *other);
  bool Equal(ImageParser *other);
+ float Percentage(ImageParser *other, float percent);
  void PathHasChanged(); // update database
 
  private:
@@ -207,7 +211,9 @@ class ImageParser
  PicColor **m_Colors;  // dynamic PicColor[] array of colors, size is from m_ColorIndex.size()
 
  public:
- 
+
+ static const int ThumbSize = 128; 
+
  bool Counted;     // used to advance progress bar, once ready is determined this is set true to indicate it has been counted
  
  std::map<int, PicColor *> ColorIndex;  // map of PicColors indexed by color e.g. #FFFFFF white

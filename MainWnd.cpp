@@ -37,12 +37,30 @@ void MainWnd::Register(String const &wndcls)
 
 bool MainWnd::Create(String const &wndcls, int nCmdShow)
 {
+ AFileTextOut logFile;
  String s;
  int i;
 
- PopUpWnd::Create(wndcls, nCmdShow); //SW_MAXIMIZE);
+ s = App->AppLocalPath();
+ s += L"\\MainWnd.log";
+ logFile.Open(s);
 
+ s = L"MainWnd Create ";
+ s += DateTime::Now().ToString(DateTime::Format::MDYHMS);
+ logFile.Write(s);
+ logFile.Write(String::StrDup(L'-', s.Length()));
+
+ logFile.Write(L"PopUpWnd::Create");
+ if (PopUpWnd::Create(wndcls, nCmdShow) == false)
+  {
+   logFile.Write(L"Create failed");
+   return false;
+  }
+
+ logFile.Write(L"LoadMainMenu()");
  LoadMainMenu();
+
+ logFile.Write(L"Child Controls Create");
 
  m_PanelItems=Rect(5,5,200,100);
  m_PanelPics=Rect(208,5, 200, 100);
@@ -92,7 +110,11 @@ bool MainWnd::Create(String const &wndcls, int nCmdShow)
  ::SetWindowPos(m_SplitPics.Handle(), HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
  ::SetWindowPos(m_SplitItems.Handle(), HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 
+ logFile.Write(L"SizeChildren()");
+
  SizeChildren();
+
+ logFile.Write(L"Load Last Current Base");
 
  i = App->GetSettingInt(L"RootDirectoryID");
  if (i > 0)
@@ -115,6 +137,8 @@ bool MainWnd::Create(String const &wndcls, int nCmdShow)
    }
  }
 
+ logFile.Write(L"Load Last Import Dir");
+
  m_CurrentImportDir = App->Options.GetSetting(L"LastImport");
  if (m_CurrentImportDir.Length()>0) 
   {
@@ -122,12 +146,19 @@ bool MainWnd::Create(String const &wndcls, int nCmdShow)
    ReloadImageList();
    RefreshImports();
   }
+
+ logFile.Write(L"LoadLastFolders");
+
  LoadLastFolders();
 
- mnuViewSetGroupViewFileNames(); // initially view File Groups
+ logFile.Write(L"Set view to file groups");
+
+ mnuViewSetGroupViewFileNames(); // initially view File Groups, not HashTags
 
  m_Status.SetText(0, App->Prose.Text(MAIN_GREETING));
- 
+
+ logFile.Write(L"MainWnd.Create() Success"); 
+
  return true;
 }
 
@@ -198,7 +229,9 @@ void MainWnd::LoadMainMenu()
  top->AddMenu(ID_VIEW_VIEWALLPICTURESINFOLDER);
  top->AddMenu(ID_VIEW_VIEWALLPICTURESANDIMPORTS);
  top->AddMenu(ID_VIEW_VIEWIMPORTS);
+
  top->AddMenu(ID_VIEW_VIEWALLDUPLICATES);
+ top->AddMenu(ID_VIEW_VIEWALLDUPLICATESBYPERCENT);
  top->AddMenu(ID_VIEW_VIEWBYGLOBALHASHTAG);
  top->Separator();
  top->AddMenu(ID_VIEW_VIEWSLIDESHOW);
@@ -749,6 +782,7 @@ WMR MainWnd::MenuHandler(int wmId)
    case ID_VIEW_VIEWALLPICTURESANDIMPORTS: mnuViewAllPicturesAndImports(); break;
    case ID_VIEW_VIEWIMPORTS: mnuViewImports(); break;
    case ID_VIEW_VIEWALLDUPLICATES: mnuViewAllDuplicates(); break;
+   case ID_VIEW_VIEWALLDUPLICATESBYPERCENT: mnuViewAllDuplicatesByPercent(); break;
    case ID_VIEW_VIEWBYGLOBALHASHTAG: mnuViewFolderByGlobalHashtags(); break;
    case ID_VIEW_VIEWSLIDESHOW: mnuViewSlideShow(); break;
    case ID_VIEW_VIEWALLBYGLOBALHASHTAG: mnuViewAllByGlobalHashtag(); break;
@@ -764,7 +798,7 @@ WMR MainWnd::MenuHandler(int wmId)
    case ID_TOOL_MAINTAINGLOBALHASHTAGS: mnuToolsMaintainGlobalHashtags(); break;
    case ID_TOOL_SETIMPORTDIRECTORY: mnuToolsSetImportDirectory(); break;
 
-   case IDM_ABOUT: OnHelpAbout(); break;
+   case ID_HELP_ABOUT: OnHelpAbout(); break;
 
    case ID_SORT_BY_FILENAME:         mnuListSortByFileName(); break;
    case ID_SORT_BY_NAME_WITH_NUMBER: mnuListSortByNameNumber(); break;
@@ -856,7 +890,7 @@ void MainWnd::mnuFileNewFolder()
 {
  DirDlg dlg(m_CurrentBase->DirPath(), DirDlg::enumWhichDir::NewFolder);
  DialogResult r;
- String strDir, name;
+ String strDir, name, err;
  FolderItem *item;
 
 
@@ -880,8 +914,10 @@ void MainWnd::mnuFileNewFolder()
 
  if (Utility::DirectoryExists(strDir)==false)
   {
-   if (Utility::DirectoryCreate(strDir, true)==false)
+   err = Utility::DirectoryCreate(strDir);
+   if (err.Length() > 0)
     {
+     App->Response(err);
      return;
     }
   } 
@@ -984,6 +1020,8 @@ void MainWnd::mnuFileActionsReloadFolder()
  RefreshBoth();       // put non import items into m_ListPics and either m_TreePics or m_TreeHashTags
 
  wait.EndWait();
+ m_Status.ProgressValue(1,0);
+ m_Status.SetText(0, L"");
 }
 
 void MainWnd::mnuFileActionsReloadFolderThumbnails()
@@ -1047,6 +1085,8 @@ void MainWnd::mnuFileActionsReloadFolderThumbnails()
   }
 
  wait.EndWait();
+ m_Status.ProgressValue(1,0);
+ m_Status.SetText(0, L"");
 }
 
 void MainWnd::mnuFileActionsRenumberFilesInFolder()
@@ -1123,6 +1163,8 @@ void MainWnd::mnuFileActionsRenumberFilesInFolder()
 
  RefreshBoth();
  wait.EndWait();
+ m_Status.ProgressValue(1,0);
+ m_Status.SetText(0, L"");
 }
 
 void MainWnd::mnuFileActionsRenameFilesToHashtags()
@@ -1175,7 +1217,7 @@ void MainWnd::mnuFileActionsRenameFilesToHashtags()
        sort.push_back(pht.second.ToString());
        i++;
       }
-     std::sort(sort.begin(), sort.end(), StringSort);
+     std::sort(sort.begin(), sort.end(), AStringSort);
      strHTGroup.Clear();
      for (const auto &str : sort)
       {
@@ -1243,6 +1285,8 @@ void MainWnd::mnuFileActionsRenameFilesToHashtags()
  RefreshBoth();
 
  wait.EndWait();
+ m_Status.ProgressValue(1,0);
+ m_Status.SetText(0, L"");
 }
 
 void MainWnd::mnuFileCloseFolder()
@@ -1301,6 +1345,8 @@ void MainWnd::mnuFileRefreshImportList()
  RefreshImports();
 
  wait.EndWait();
+ m_Status.ProgressValue(1,0);
+ m_Status.SetText(0, L"");
 }
 
 void MainWnd::mnuFileExit()
@@ -1623,6 +1669,139 @@ void MainWnd::mnuViewAllDuplicates()
    RefreshImports();
   }
 }
+
+void MainWnd::CompareThread(SpreadSheetRow *row, float percent)
+{
+ std::vector<SpreadSheetItem *> matches;
+ float total;
+
+ total = 0;
+ for(const auto &item : row->Matches)
+  {
+   item->Match = item->Image->Percentage(row->Image, percent);
+   if (item->Match > 0.0F)
+    {
+     matches.push_back(item);
+     total += item->Match;
+    }
+   else
+    {
+     delete item;
+    }
+  }
+ 
+ row->Matches.clear();
+ row->Matches = matches;
+ row->TotalMatches = total;
+}
+
+void MainWnd::mnuViewAllDuplicatesByPercent()
+{
+ DupPercentDlg dlg;
+ SpreadSheetDlg wnd;
+ std::vector<std::thread> threads;
+ std::map<int, ImageParser *> dups;
+ std::vector<ImageParser *> listLeft, listRight, listOut;
+ SpreadSheetRow *row;
+ SpreadSheetItem *item;
+ bool isGroup, isHashTag, isUnassigned, isImport;
+ bool add;
+ int i;
+
+ if (dlg.Show(this) != DialogResult::OK)
+   return;
+
+ for(const auto &p : App->Pictures)
+  {
+   isGroup = p.second->IsNumbered();
+   isImport = p.second->IsImport();
+   if (p.second->Item() == nullptr)
+     isHashTag = false;
+   else
+     isHashTag = ( p.second->Item()->PictureHashTags.size() > 0 );
+   if (isGroup == false && isHashTag == false && isImport == false)
+     isUnassigned = true;
+   else
+     isUnassigned = false;
+
+   add = false;
+
+   if (dlg.LeftGroupMembers() == true && isGroup == true) add = true;
+   if (dlg.LeftHashTagMembers() == true && isHashTag == true) add = true;
+   if (dlg.LeftUnassigned() == true && isUnassigned == true) add = true;
+   if (dlg.LeftImports() == true && isImport == true) add = true;
+   if (dlg.LeftNotInGroup() == true && isGroup == false) add = true;
+   if (dlg.LeftNoHashTags() == true && isHashTag == false) add = true;
+   if (add == true)
+    {
+     listLeft.push_back(p.second);
+    }
+
+   add = false;
+
+   if (dlg.RightGroupMembers() == true && isGroup == true) add = true;
+   if (dlg.RightHashTagMembers() == true && isHashTag == true) add = true;
+   if (dlg.RightUnassigned() == true && isUnassigned == true) add = true;
+   if (dlg.RightImports() == true && isImport == true) add = true;
+   if (dlg.RightNotInGroup() == true && isGroup == false && isImport == false) add = true;
+   if (dlg.RightNoHashTags() == true && isHashTag == false && isImport == false) add = true;
+   if (add == true)
+    {
+     if (isHashTag == true) throw L"what the hell!";
+     listRight.push_back(p.second);  
+    }
+  }
+
+ m_Status.Clear(1);
+
+
+ m_Status.SetText(0, L"Scanning for duplicates");
+  
+ i = 0;
+ for(const auto &p : listLeft)
+  {
+   row = new SpreadSheetRow(p);
+   wnd.Rows.push_back(row);
+   for(const auto  &pc : listRight)
+    {
+     if (p->ID() != pc->ID())
+      {
+       item = new SpreadSheetItem(pc);
+       row->Matches.push_back(item);
+      }
+    }
+  }
+
+ m_Status.ProgressMax(1, wnd.Rows.size());
+ m_Status.ProgressValue(1, 0);
+ i = 0;
+ for(const auto &row : wnd.Rows)
+  {
+   threads.push_back(std::thread(MainWnd::CompareThread, row, dlg.Percentage()));
+   m_Status.ProgressValue(1, i++);
+  }
+
+ m_Status.ProgressMax(1, threads.size());
+ m_Status.ProgressValue(1, 0);
+ i = 0;
+ for (auto &thread : threads)
+  {
+   m_Status.ProgressValue(1, i++);
+   thread.join();
+  }
+ m_Status.Clear(1);
+
+ wnd.Sort();
+
+ wnd.Show(this);
+ if (wnd.Sheet.Changed() == true)
+  {
+   RefreshBoth();
+   RefreshImports();
+  }
+}
+
+
 void MainWnd::mnuViewFolderByGlobalHashtags()
 {
  HashTagChooseDlg dlg;
@@ -1710,7 +1889,7 @@ void MainWnd::mnuViewAllByGlobalHashtag()
 
  App->Pictures.clear(); // have to substitute the globals
 
- il.Create(ImageList::Style::Regular, 128, 128, (int)list.size());
+ il.Create(ImageList::Style::Regular, ImageParser::ThumbSize, ImageParser::ThumbSize, (int)list.size());
  
  for (const auto &px : list)
   {
@@ -2008,37 +2187,15 @@ void MainWnd::mnuPopUpListMoveToNewGroup()
 
 void MainWnd::mnuPopUpListReplaceFolderHashTag()
 {
- WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
- std::vector<HashTag> list;
  std::vector<int> selected;
- HashTagSelectorDlg dlg;
+ std::vector<ImageParser *> images;
  ImageParser *px;
- DialogResult dr;
  int id;
 
  if (m_CurrentFolder == nullptr) { App->Response(MAIN_FOLDER_OPEN); return; }
  if (m_ListPics.SelectedItemsCount() == 0) { App->Response(COMMON_NOTHING_SELECTED); return; }
 
- dr = dlg.Show(this, m_CurrentFolder, HashTagSelectorDlg::eMode::PictureTags); // get a fresh set of hashtags for each selected picture
- if (dr == DialogResult::OK)
-  {
-   for(const auto &pht1 : dlg.PictureHashTags)
-     list.push_back(pht1);
-  
-  }
- if (dr != DialogResult::OK)
-   return;
- 
- if (list.size() == 0)
-  {
-   App->Response(MAIN_HASHTAGS_NOT_SELECTED);
-   return;
-  }
-
- wait.BeginWait();
-
  selected = m_ListPics.GetSelectedIndices(); 
-
  for (const auto &ndx : selected)
   {
    id = m_ListPics.GetItemParam(ndx);
@@ -2046,21 +2203,18 @@ void MainWnd::mnuPopUpListReplaceFolderHashTag()
    #ifdef _DEBUG
    if (App->Pictures.count(id) == 0) throw L"m_ListPic item param wasn't a valid App->Picture ImageParser ID";
    #endif
-
+    
    px = App->Pictures[id];
 
    #ifdef _DEBUG
    if (px->Item() == nullptr) throw L"ImageParser's PictureItem is null";
    #endif
 
-   px->Item()->ReplacePictureHashTags(list);
-   if (px->ID() == m_PicList.Item()->ID()) 
-     m_PicList.RefreshHashTags();
+   images.push_back(px);
   }
 
- RefreshBoth();
-
- wait.EndWait();
+ if (ReplaceHashTags(images) == true)
+   RefreshBoth();
 }
 
 void MainWnd::mnuPopUpListAddFolderHashTag()
@@ -2364,12 +2518,7 @@ void MainWnd::mnuPopUpImportMoveToNewGroup()
 {
  std::vector<ImageParser *> list;
  std::vector<int> indices;
- DialogResult res;
  ImageParser *px;
- String strGroup=L"";
- TreeNode nd;
- TreeNode gNode;
- ListViewItem item;
  int id;
 
  if (m_ListImport.SelectedItemsCount() < 1)
@@ -2384,29 +2533,6 @@ void MainWnd::mnuPopUpImportMoveToNewGroup()
   }
 
  indices = m_ListImport.GetSelectedIndices();
- id = m_ListImport.GetItemParam(indices[0]);
- #ifdef _DEBUG
- if (App->Pictures.count(id) == 0) throw L"m_ListImports param not a valid ImageParser id";
- #endif
- px = App->Pictures[id];
-
- GroupNameDlg dlg(px->FileName(), false);
- res = dlg.Show(this, App->Prose.Text(MAIN_GROUP_NEW));
- if (res == DialogResult::OK)
-    strGroup = dlg.GroupName();
- else
-   return;
-
- for(const auto &ng : m_TreeGroup.Nodes())
-  {
-   if (String::Compare(ng.Text, strGroup) == 0)
-    {
-     App->Response(App->Prose.TextArgs(MAIN_GROUP_EXISTS, strGroup));
-     return;
-    }
-  }
-
- SetPictureViewer(&m_PicList, nullptr);
 
  for(const auto &ndx : indices)
   {
@@ -2417,22 +2543,17 @@ void MainWnd::mnuPopUpImportMoveToNewGroup()
    px = App->Pictures[id];
    list.push_back(px);
   }
-  
- if (ReorderList(strGroup, list, m_CurrentFolder, true) == false) 
-  {
-   App->Response(App->Prose.TextArgs(MAIN_IMPORT_RENAME_FAILED, strGroup));
+
+ if (MoveToNewGroup(list) == false)
    return;
-  }  
 
  // move successful, do controls
 
+ SetPictureViewer(&m_PicList, nullptr);
  m_ListImport.RemoveItems(indices);
  RefreshBoth();
-
- SetPictureViewer(&m_PicList, nullptr);
-
- m_Status.SetText(0, App->Prose.TextArgs(MAIN_IMPORT_RENAME_SUCCESS, strGroup));
 }
+
 
 void MainWnd::mnuPopUpImportMoveToList()
 {
@@ -2913,7 +3034,6 @@ void MainWnd::mnuPopUpTreeGroupPicBackToList()
 
 void MainWnd::mnuPopUpTreeGroupPicMoveToAnother()
 {
- GroupSelectDlg dlg;
  std::vector<ImageParser *> listPic;
  std::vector<TreeNode> nodes;
  std::vector<String> list;
@@ -2933,53 +3053,27 @@ void MainWnd::mnuPopUpTreeGroupPicMoveToAnother()
   }
 
  nodeFromGroup = nodeFrom.GetParent();
-
- nodes = m_TreeGroup.Nodes();
- for (const auto &n : nodes)
-   list.push_back(n.Text);
+ listPic.push_back(App->Pictures[nodeFrom.Tag]);
  
- if (dlg.Show(this, list) == DialogResult::OK)
+ if (MoveToExistingGroup(listPic) == true)
   {
-   for(const auto &n : nodes)
+   listPic.clear();
+   for(const auto &n : nodeFromGroup.GetNodes()) 
     {
-     if (n.Text == dlg.GroupName())
-       nodeTo = n;
+     if (n.Handle() != nodeFrom.Handle())  // get list of pics from original group
+      {                                    // not including the moved one
+       #ifdef _DEBUG
+       if (App->Pictures.count(n.Tag) == 0) throw L"m_TreeGroup node tag should be id";
+       #endif
+       listPic.push_back(App->Pictures[n.Tag]);
+      }
     }
-   if (nodeTo.Handle() == 0) throw L"Didn't find selected node";
-
-   for(const auto &n : nodeTo.GetNodes())
-    {
-     #ifdef _DEBUG
-     if (App->Pictures.count(n.Tag) == 0) throw L"m_TreeGroup node tag should be id";
-     #endif
-     listPic.push_back(App->Pictures[n.Tag]);
-    }
-
-   if (App->Pictures.count(nodeFrom.Tag) == 0) throw L"m_TreeGroup node tag should be id";
-   listPic.push_back(App->Pictures[nodeFrom.Tag]);
-
-   if (ReorderList(nodeTo.Text, listPic, m_CurrentFolder, false) == false)
+   if (ReorderList(nodeFromGroup.Text, listPic, m_CurrentFolder, false) == false)
      App->Response(App->Prose.TextArgs(COMMON_FAILED, App->Prose.Text(ID_TREEGROUP_PIC_MOVE_TO_ANOTHER)));
    else
     {
-     listPic.clear();
-     for(const auto &n : nodeFromGroup.GetNodes()) 
-      {
-       if (n.Handle() != nodeFrom.Handle())  // get list of pics from original group
-        {                                    // not including the moved one
-         #ifdef _DEBUG
-         if (App->Pictures.count(n.Tag) == 0) throw L"m_TreeGroup node tag should be id";
-         #endif
-         listPic.push_back(App->Pictures[n.Tag]);
-        }
-      }
-     if (ReorderList(nodeFromGroup.Text, listPic, m_CurrentFolder, false) == false)
-       App->Response(App->Prose.TextArgs(COMMON_FAILED, App->Prose.Text(ID_TREEGROUP_PIC_MOVE_TO_ANOTHER)));
-     else
-      {
-       RefreshFileGroupTree();
-       m_Status.SetText(0, App->Prose.TextArgs(COMMON_SUCCESS, App->Prose.Text(ID_TREEGROUP_PIC_MOVE_TO_ANOTHER)));
-      }
+     RefreshFileGroupTree();
+     m_Status.SetText(0, App->Prose.TextArgs(COMMON_SUCCESS, App->Prose.Text(ID_TREEGROUP_PIC_MOVE_TO_ANOTHER)));
     }
   }
 }
@@ -3945,6 +4039,157 @@ void MainWnd::ProcessImportDirectory(String const &strPath)
 
 }
 
+bool MainWnd::MoveToNewGroup(std::vector<ImageParser *> const &list)
+{
+ std::vector<int> indices;
+ DialogResult res;
+ ImageParser *px;
+ String strGroup=L"";
+ TreeNode nd;
+ TreeNode gNode;
+ ListViewItem item;
+
+ if (list.size() == 0)
+   return false;
+
+ px = list[0];
+
+ GroupNameDlg dlg(px->FileName(), false);
+ res = dlg.Show(this, App->Prose.Text(MAIN_GROUP_NEW));
+ if (res == DialogResult::OK)
+    strGroup = dlg.GroupName();
+ else
+   return false;
+
+ for(const auto &ng : m_TreeGroup.Nodes())
+  {
+   if (String::Compare(ng.Text, strGroup) == 0)
+    {
+     App->Response(App->Prose.TextArgs(MAIN_GROUP_EXISTS, strGroup));
+     return false;
+    }
+  }
+  
+ if (ReorderList(strGroup, list, m_CurrentFolder, true) == false) 
+  {
+   App->Response(App->Prose.TextArgs(MAIN_IMPORT_RENAME_FAILED, strGroup));
+   return false;
+  }  
+ m_Status.SetText(0, App->Prose.TextArgs(MAIN_IMPORT_RENAME_SUCCESS, strGroup));
+ return true;
+}
+
+bool MainWnd::MoveToExistingGroup(std::vector<ImageParser *> const &moveList)
+{
+ GroupSelectDlg dlg;
+ std::vector<TreeNode> nodes;
+ std::vector<String> list;
+ std::vector<ImageParser *> listPic;
+ TreeNode nodeTo;
+
+ nodes = m_TreeGroup.Nodes();
+ for (const auto &n : nodes)
+   list.push_back(n.Text);
+ 
+ if (dlg.Show(this, list) == DialogResult::OK)
+  {
+   for(const auto &n : nodes)
+    {
+     if (n.Text == dlg.GroupName())
+       nodeTo = n;
+    }
+   if (nodeTo.Handle() == 0) throw L"Didn't find selected node";
+
+   for(const auto &n : nodeTo.GetNodes())
+    {
+     #ifdef _DEBUG
+     if (App->Pictures.count(n.Tag) == 0) throw L"m_TreeGroup node tag should be id";
+     #endif
+     listPic.push_back(App->Pictures[n.Tag]);
+    }
+
+   for(const auto &px : moveList)
+    {
+     listPic.push_back(px);
+    }
+
+   if (ReorderList(nodeTo.Text, listPic, m_CurrentFolder, false) == false)
+     App->Response(App->Prose.TextArgs(COMMON_FAILED, App->Prose.Text(ID_TREEGROUP_PIC_MOVE_TO_ANOTHER)));
+   else
+     return true;
+  }
+ return false;
+}
+
+bool MainWnd::MoveToExistingGroup(std::vector<ImageParser *> const &moveList, String const &groupName)
+{
+ std::vector<String> list;
+ std::vector<ImageParser *> listPic;
+ TreeNode nodeTo;
+
+ // add pics in group "groupName" to listPic list
+
+ for(const auto &px : App->Pictures)
+  {
+   if (px.second->IsImport() == false)
+    {
+     if (px.second->IsNumbered() == true)
+      {
+       if (String::Compare(groupName, px.second->FilePrefix()) == 0)
+         listPic.push_back(px.second);
+      }
+    }
+  }
+
+ for(const auto &px : moveList)
+  {
+   listPic.push_back(px); // add in the selected pictures
+  }
+
+ if (ReorderList(nodeTo.Text, listPic, m_CurrentFolder, false) == false)
+   App->Response(App->Prose.TextArgs(COMMON_FAILED, App->Prose.Text(ID_TREEGROUP_PIC_MOVE_TO_ANOTHER)));
+ else
+   return true;
+ 
+ return false;
+}
+
+bool MainWnd::ReplaceHashTags(std::vector<ImageParser *> const &selected)
+{
+ WaitCursor wait(WaitCursor::WaitStyle::WaitLater);
+ std::vector<HashTag> list;
+ HashTagSelectorDlg dlg;
+ DialogResult dr;
+
+ dr = dlg.Show(this, m_CurrentFolder, HashTagSelectorDlg::eMode::PictureTags); // get a fresh set of hashtags for each selected picture
+ if (dr == DialogResult::OK)
+  {
+   for(const auto &pht1 : dlg.PictureHashTags)
+     list.push_back(pht1);
+  
+  }
+ if (dr != DialogResult::OK)
+   return false;
+ 
+ if (list.size() == 0)
+  {
+   App->Response(MAIN_HASHTAGS_NOT_SELECTED);
+   return false;
+  }
+
+ wait.BeginWait();
+
+ for (const auto &px : selected)
+  {
+   px->Item()->ReplacePictureHashTags(list);
+  }
+
+ RefreshBoth();
+
+ wait.EndWait();
+ return true;
+}
+
 void MainWnd::GrindPicture(ImageParser *px)
 {
  px->ProcessImage();
@@ -4575,7 +4820,7 @@ void MainWnd::ReloadImageList()
 {
 
  m_ImageThumbs.Destroy();
- m_ImageThumbs.Create(ImageList::Style::Regular, 128, 128, (int)App->Pictures.size());
+ m_ImageThumbs.Create(ImageList::Style::Regular, ImageParser::ThumbSize, ImageParser::ThumbSize, (int)App->Pictures.size());
 
  for (const auto &it : App->Pictures)
   {

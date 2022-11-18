@@ -47,6 +47,8 @@
 #define IDB_SHOWDUPS                    167
 #define IDD_BLANK                       168
 #define IDD_LANGUAGE                    169
+#define IDD_DUP_PERCENT                 170
+#define IDD_HASHTAGSET_CHOOSE           171
 #define IDC_LOGIN_EDIT_SERVER           1000
 #define IDC_LOGIN_EDIT_USER             1001
 #define IDC_LOGIN_EDIT_PWD              1002
@@ -155,6 +157,26 @@
 #define IDC_DIR_BTN                     1104
 #define IDC_BASE_PROP_BROWSE            1105
 #define IDC_BASEITEM_MGR_ADD            1106
+#define IDC_DUP_PERCENT_EDIT            1110
+#define IDC_DUP_PERCENT_LABEL1          1111
+#define IDC_DUP_PERCENT_LABEL2          1112
+#define IDC_DUP_PERCENT_CL1             1117
+#define IDC_DUP_PERCENT_CL2             1118
+#define IDC_DUP_PERCENT_CL3             1119
+#define IDC_DUP_PERCENT_GL              1120
+#define IDC_DUP_PERCENT_GR              1121
+#define IDC_PICPROPS_THUMB              1122
+#define IDC_DUP_PERCENT_CR1             1123
+#define IDC_HASHTAGSET_CHOOSE_LIST      1123
+#define IDC_DUP_PERCENT_CR2             1124
+#define IDC_PICPROPS_DB_HASHTAGS        1124
+#define IDC_DUP_PERCENT_CR3             1125
+#define IDC_DUP_PERCENT_CL4             1126
+#define IDC_DUP_PERCENT_CR4             1127
+#define IDC_DUP_PERCENT_CL5             1128
+#define IDC_DUP_PERCENT_CL6             1129
+#define IDC_DUP_PERCENT_CR5             1130
+#define IDC_DUP_PERCENT_CR6             1131
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -162,9 +184,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        170
+#define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_COMMAND_VALUE         33009
-#define _APS_NEXT_CONTROL_VALUE         1107
+#define _APS_NEXT_CONTROL_VALUE         1125
 #define _APS_NEXT_SYMED_VALUE           121
 #endif
 #endif

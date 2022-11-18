@@ -20,6 +20,7 @@ void HelpAboutDlg::OnInitDialog()
    ::SendMessage(hWnd, STM_SETICON, (WPARAM)hIcon, 0); 
    DestroyIcon(hIcon);
   }
+ ADialog::OnInitDialog();
 }
 
 WMR HelpAboutDlg::OnCommand(int childID, HWND hCtrl)
@@ -51,13 +52,13 @@ LoginDlg::LoginDlg()
  
  if (file.Open(path) == true)
   {
-   Server = Utility::Decrypt(file.ReadBytes());
-   Db = Utility::Decrypt(file.ReadBytes());
-   User = Utility::Decrypt(file.ReadBytes());
+   Server = Application::Decrypt(file.ReadBytes());
+   Db = Application::Decrypt(file.ReadBytes());
+   User = Application::Decrypt(file.ReadBytes());
    bytes = file.ReadBytes();  // "1" or "0"
    RememberPassword = ( bytes[0] == 1);
    if (RememberPassword == true)
-     Password = Utility::Decrypt(file.ReadBytes());
+     Password = Application::Decrypt(file.ReadBytes());
    file.Close();
   }
  else
@@ -90,14 +91,14 @@ void LoginDlg::SaveSettings()
   }
  else
   {
-   file.Write(Utility::Encrypt(Server));
-   file.Write(Utility::Encrypt(Db));
-   file.Write(Utility::Encrypt(User));
+   file.Write(Application::Encrypt(Server));
+   file.Write(Application::Encrypt(Db));
+   file.Write(Application::Encrypt(User));
    if (RememberPassword == true)
     {
      bytes.push_back(1);
      file.Write(bytes);
-     file.Write(Utility::Encrypt(Password));
+     file.Write(Application::Encrypt(Password));
      }
    else
     {
@@ -1480,9 +1481,16 @@ void PicturePropertiesDlg::Show(AWnd *parent, ImageParser *px)
 
 void PicturePropertiesDlg::OnInitDialog()
 {
- String na;
+ String na, tags;
+ HBITMAP hBmp;
+
+ ADialog::OnInitDialog();
 
  na = App->Prose.Text(COMMON_NA);
+ 
+ m_Pic->Thumb()->GetHBITMAP(Gdiplus::Color::White, &hBmp);
+ SendDlgItemMessage(m_hWnd, IDC_PICPROPS_THUMB, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBmp);
+ DeleteBitmap(hBmp);
 
  SetItemText(IDC_PICPROPS_FILE_DIR, m_Pic->Directory());
  SetItemText(IDC_PICPROPS_FILE_NAME, m_Pic->FileName());
@@ -1511,6 +1519,14 @@ void PicturePropertiesDlg::OnInitDialog()
    SetItemText(IDC_PICPROPS_DB_PIC_ID, String::Decimal(m_Pic->Item()->ID()));
    SetItemText(IDC_PICPROPS_DB_PIC_NAME, m_Pic->Item()->FileName());
    SetItemText(IDC_PICPROPS_DB_ADDED, m_Pic->Item()->DateAdded().ToString(DateTime::Format::MDYHMS));
+   if (m_Pic->Item()->PictureHashTags.size() > 0)
+    {
+     m_Pic->Item()->SetPictureHashTagString();
+     tags = m_Pic->Item()->PictureHashTagString();
+    }
+   else
+     tags = na;
+   SetItemText(IDC_PICPROPS_DB_HASHTAGS, tags);   
   }
  else
   {
@@ -1523,7 +1539,6 @@ void PicturePropertiesDlg::OnInitDialog()
    SetItemText(IDC_PICPROPS_DB_PIC_NAME, na);
    SetItemText(IDC_PICPROPS_DB_ADDED, na);
   }
- ADialog::OnInitDialog();
 }
 
 WMR PicturePropertiesDlg::OnCommand(int child, HWND hChild)
@@ -2364,6 +2379,86 @@ void GroupSelectDlg::OnOK()
  
 }
 
+//////////////////////////////////////////////////////////////////
+
+DialogResult HashTagSetSelectDlg::Show(AWnd *parent, std::vector<ImageParser *> const &list)
+{
+ m_Pics = list;
+ return ADialog::Show(IDD_HASHTAGSET_CHOOSE, parent);
+}
+
+void HashTagSetSelectDlg::OnInitDialog()
+{
+ String txt;
+
+ m_Images.Create(ImageList::Style::Regular, ImageParser::ThumbSize, ImageParser::ThumbSize, m_Pics.size());
+ for(const auto &px : m_Pics)
+  {
+   m_Images.Add(px->Thumb(), px->ID());
+  }
+
+ m_List.Attach(this, IDC_HASHTAGSET_CHOOSE_LIST);
+ m_List.SetImageList(&m_Images);
+
+ m_List.AddColumn(UI_COLUMN_HASHTAG_SET_NAME, ListViewColumn::ColumnAlign::Left, 100);
+ for(const auto &s : m_Pics)
+  {
+   if (s->Item() == nullptr)
+     throw L"shouldn't have import ImageParser instances";
+   if (s->Item()->PictureHashTags.size() == 0)
+     throw L"should have picture hash tags";
+   txt = s->Item()->PictureHashTagString();
+   ListViewItem item(txt);
+   item.Tag = s->ID();
+   item.Image = m_Images.GetIndex(s->ID());
+   m_List.Insert(item);
+  }
+ m_List.AutoSize(0, ListView::AutoSizes::Content);
+ ADialog::OnInitDialog();
+}
+
+WMR HashTagSetSelectDlg::OnCommand(int child, HWND hChild)
+{
+ switch(child)
+  {
+   case IDOK: 
+     OnOK();
+     break;
+   case IDCANCEL:
+     Close(DialogResult::Cancel);
+     break;
+  }
+ return WMR::One;
+}
+
+void HashTagSetSelectDlg::OnOK()
+{
+ ImageParser *px;
+ int ndx, id;
+
+ if (m_List.SelectedItemsCount() == 0)
+  {
+   App->Response(L"Select a group name");
+   return;
+  }
+
+ ndx = m_List.GetSelectedItem(); 
+ id = m_List.GetItemParam(ndx);
+
+ if (App->Pictures.count(id) == 0)
+   throw L"didn't get picture from ListViewItem's param";
+
+ px = App->Pictures[id];
+ if (px->Item() == nullptr)
+   throw L"shouldn't have import pictures in list";
+
+ for(const auto &ht : px->Item()->PictureHashTags)
+   m_SelectedTags.push_back(ht.second);
+ 
+ Close(DialogResult::OK);
+}
+
+
 ////////////////////////////////////////////////////////
 
 DialogResult LanguageDlg::Show()
@@ -2404,6 +2499,118 @@ WMR LanguageDlg::OnCommand(int child, HWND hChild)
   }
  if (child == IDCANCEL)
    Close(DialogResult::Cancel);
+
+ return ret;
+}
+
+/////////////////////////////////////////////////////////
+
+DialogResult DupPercentDlg::Show(AWnd *parent)
+{
+ m_Percent = (float)App->GetSettingDbl(L"DupPercentDlgPercent", 0.60);
+ 
+ m_LeftGroupMembers = App->GetSettingBool(L"DupPercentDlgLeftGroup", false);
+ m_LeftHashTagMembers = App->GetSettingBool(L"DupPercentDlgLeftHashTag", false);
+ m_LeftUnassigned = App->GetSettingBool(L"DupPercentDlgLeftUnassigned", false);
+ m_LeftImports = App->GetSettingBool(L"DupPercentDlgLeftImport", false);
+ m_LeftNotInGroup = App->GetSettingBool(L"DupPercentDlgLeftNotInGroup", false);
+ m_LeftNoHashTags = App->GetSettingBool(L"DupPercentDlgLeftNoHashTags", false);
+
+ m_RightGroupMembers = App->GetSettingBool(L"DupPercentDlgRightGroup", false);
+ m_RightHashTagMembers = App->GetSettingBool(L"DupPercentDlgRightHashTag", false);
+ m_RightUnassigned = App->GetSettingBool(L"DupPercentDlgRightUnassigned", false);
+ m_RightImports = App->GetSettingBool(L"DupPercentDlgRightImport", false);
+ m_RightNotInGroup = App->GetSettingBool(L"DupPercentDlgRightNotInGroup", false);
+ m_RightNoHashTags = App->GetSettingBool(L"DupPercentDlgRightNoHashTags", false);
+
+ return ADialog::Show(IDD_DUP_PERCENT, parent);
+}
+
+void DupPercentDlg::OnInitDialog()
+{
+ String txt;
+ int val;
+
+ val = (int)( m_Percent * 100.0F);
+
+ txt = String::Decimal(val);
+ SetItemText(IDC_DUP_PERCENT_EDIT, txt);
+
+ SetCheckState(IDC_DUP_PERCENT_CL1, LeftGroupMembers());
+ SetCheckState(IDC_DUP_PERCENT_CL2, LeftHashTagMembers());
+ SetCheckState(IDC_DUP_PERCENT_CL3, LeftUnassigned());
+ SetCheckState(IDC_DUP_PERCENT_CL4, LeftImports());
+ SetCheckState(IDC_DUP_PERCENT_CL5, LeftNotInGroup());
+ SetCheckState(IDC_DUP_PERCENT_CL6, LeftNoHashTags());
+
+ SetCheckState(IDC_DUP_PERCENT_CR1, RightGroupMembers());
+ SetCheckState(IDC_DUP_PERCENT_CR2, RightHashTagMembers());
+ SetCheckState(IDC_DUP_PERCENT_CR3, RightUnassigned());
+ SetCheckState(IDC_DUP_PERCENT_CR4, RightImports());
+ SetCheckState(IDC_DUP_PERCENT_CR5, RightNotInGroup()); 
+ SetCheckState(IDC_DUP_PERCENT_CR6, RightNoHashTags());
+
+ ADialog::OnInitDialog();
+}
+
+WMR DupPercentDlg::OnCommand(int child, HWND hChild)
+{
+ WMR ret = WMR::One;
+ String str;
+ int val;
+
+ if (child == IDCANCEL)
+  {
+   Close(DialogResult::Cancel);
+  }
+
+ if (child == IDOK)
+  {
+   str = GetItemText(IDC_DUP_PERCENT_EDIT);
+   if (String::TryIntParse(str, &val) == false)
+    {
+     App->Response(DLG_DUP_PERCENT_VALIDATE);
+     return ret;
+    }
+   if (val<1 || val > 100)
+    {
+     App->Response(DLG_DUP_PERCENT_VALIDATE);
+     return ret;
+    }
+   m_Percent = (float)val / 100.0F;
+
+   m_LeftGroupMembers = GetCheckState(IDC_DUP_PERCENT_CL1);
+   m_LeftHashTagMembers = GetCheckState(IDC_DUP_PERCENT_CL2);
+   m_LeftUnassigned = GetCheckState(IDC_DUP_PERCENT_CL3);
+   m_LeftImports = GetCheckState(IDC_DUP_PERCENT_CL4);
+   m_LeftNotInGroup = GetCheckState(IDC_DUP_PERCENT_CL5);
+   m_LeftNoHashTags = GetCheckState(IDC_DUP_PERCENT_CL6);
+
+   m_RightGroupMembers = GetCheckState(IDC_DUP_PERCENT_CR1);
+   m_RightHashTagMembers = GetCheckState(IDC_DUP_PERCENT_CR2);
+   m_RightUnassigned = GetCheckState(IDC_DUP_PERCENT_CR3);
+   m_RightImports = GetCheckState(IDC_DUP_PERCENT_CR4);
+   m_RightNotInGroup = GetCheckState(IDC_DUP_PERCENT_CR5);
+   m_RightNoHashTags = GetCheckState(IDC_DUP_PERCENT_CR6);
+
+   App->SaveSettingDbl(L"DupPercentDlgPercent", (double)m_Percent);
+
+   App->SaveSettingBool(L"DupPercentDlgLeftGroup", LeftGroupMembers());
+   App->SaveSettingBool(L"DupPercentDlgLeftHashTag", LeftHashTagMembers());
+   App->SaveSettingBool(L"DupPercentDlgLeftUnassigned", LeftUnassigned());
+   App->SaveSettingBool(L"DupPercentDlgLeftImport", LeftImports());
+   App->SaveSettingBool(L"DupPercentDlgLeftNotInGroup", LeftNotInGroup());
+   App->SaveSettingBool(L"DupPercentDlgLeftNoHashTags", LeftNoHashTags());
+
+   App->SaveSettingBool(L"DupPercentDlgRightGroup", RightGroupMembers());
+   App->SaveSettingBool(L"DupPercentDlgRightHashTag", RightHashTagMembers());
+   App->SaveSettingBool(L"DupPercentDlgRightUnassigned", RightUnassigned());
+   App->SaveSettingBool(L"DupPercentDlgRightImport", RightImports());
+   App->SaveSettingBool(L"DupPercentDlgRightNotInGroup", RightNotInGroup());
+   App->SaveSettingBool(L"DupPercentDlgRightNoHashTags", RightNoHashTags());
+
+   Close(DialogResult::OK);
+  }
 
  return ret;
 }

@@ -5,7 +5,7 @@ PicColor::PicColor()
 {
 }
 
-PicColor::PicColor(int ck, int r, int g, int b, int count)
+PicColor::PicColor(int ck, BYTE r, BYTE g, BYTE b, int count)
 {
  m_Key=ck;
  m_R=r;
@@ -26,6 +26,30 @@ int PicColor::CompareRGB(PicColor *p1, PicColor *p2)
  if (p1->B() < p2->B()) return -1;
 
  return 0;
+}
+
+bool PicColor::EqualRGB(PicColor *p1, PicColor *p2)
+{
+ if (p1->R() != p2->R()) return false;
+ if (p1->G() != p2->G()) return false;
+ if (p1->B() != p2->B()) return false;
+
+ return true;
+}
+
+
+bool PicColor::PercentageRGB(PicColor *p1, PicColor *p2, float percentage)
+{
+ if (Utility::ComparePercentage(p1->R(), p2->R(), percentage) == false)
+   return false;
+
+ if (Utility::ComparePercentage(p1->G(), p2->G(), percentage) == false)
+   return false;
+
+ if (Utility::ComparePercentage(p1->B(), p2->B(), percentage) == false)
+   return false;
+
+ return true;
 }
 
 FileInfo::FileInfo()
@@ -179,13 +203,13 @@ void ImageParser::SetItem(PictureItem *item, Bitmap *img)
  if (m_Thumb != nullptr)
    delete m_Thumb;
 
- m_Thumb=new Bitmap(128, 128, PixelFormat24bppRGB); // Thumb is square with "window" border for ListView 
+ m_Thumb=new Bitmap(ThumbSize, ThumbSize, PixelFormat24bppRGB); // Thumb is square with "window" border for ListView 
   {
    Graphics gr(m_Thumb);
    if (App->DarkMode() == true)
-     gr.Clear(Utility::GetSystemColor(COLOR_WINDOWTEXT));
+     gr.Clear(Application::GetSystemColor(COLOR_WINDOWTEXT));
    else
-     gr.Clear(Utility::GetSystemColor(COLOR_WINDOW));
+     gr.Clear(Application::GetSystemColor(COLOR_WINDOW));
    gr.DrawImage(m_Original, Point(0,0));
   }
  m_Ready = true;
@@ -203,13 +227,13 @@ void ImageParser::ProcessImageInternal(Bitmap  *img)
 
  if (m_Width > m_Height) 
   {
-   sw = 128;
-   sh = (int)(128.0 * (double)m_Height / (double)m_Width);
+   sw = ThumbSize;
+   sh = (int)((float)ThumbSize * (double)m_Height / (double)m_Width);
   }
  else
   {
-   sh = 128;
-   sw = (int)(128.0 * (double)m_Width / (double)m_Height);
+   sh = ThumbSize;
+   sw = (int)((float)ThumbSize * (double)m_Width / (double)m_Height);
   }
 
  m_Original = new Bitmap(sw, sh, PixelFormat24bppRGB);  // imgThumb is a smaller version of the original pic
@@ -221,10 +245,10 @@ void ImageParser::ProcessImageInternal(Bitmap  *img)
 
  ExtractColor();
 
- m_Thumb = new Bitmap(128, 128, PixelFormat24bppRGB);  // Thumb is square with "window" border
+ m_Thumb = new Bitmap(ThumbSize, ThumbSize, PixelFormat24bppRGB);  // Thumb is square with "window" border
   { 
    Graphics gr(m_Thumb);
-   gr.Clear(Utility::GetSystemColor(COLOR_WINDOW));
+   gr.Clear(Application::GetSystemColor(COLOR_WINDOW));
    gr.DrawImage(m_Original, Point(0,0));
   }
 }
@@ -540,7 +564,6 @@ int ImageParser::CompareRGB(ImageParser *py)
 bool ImageParser::Equal(ImageParser *py)
 {
  int i, c;
- int k;
 
  if (m_Width != py->Width()) return false;
  if (m_Height != py->Height()) return false;
@@ -549,11 +572,43 @@ bool ImageParser::Equal(ImageParser *py)
  c = (int)ColorIndex.size();
  for (i=0;i<c;i++)
   {
-   k = PicColor::CompareRGB(m_Colors[i], py->m_Colors[i]);
-   if (k != 0) return false;
-   if (m_Colors[i]->Amount() != py->m_Colors[i]->Amount()) return false;
+   if (PicColor::EqualRGB(m_Colors[i], py->m_Colors[i]) == false)
+     return false;
+   if (m_Colors[i]->Amount() != py->m_Colors[i]->Amount()) 
+     return false;
   }
  return true;
+}
+
+float ImageParser::Percentage(ImageParser *py, float percentage)
+{
+ int i, c, cs1, cs2, tm;
+
+ cs1 = (int)ColorIndex.size();
+ cs2 = (int)py->ColorIndex.size();
+
+ if (Utility::ComparePercentage(cs1, cs2, percentage) == false)
+   return false;
+
+ if (cs1 < cs2)
+   c = cs1;
+ else
+   c = cs2;
+
+ tm = 0;
+
+ for (i=0;i<c;i++)
+  {
+   if ( PicColor::PercentageRGB(m_Colors[i], py->m_Colors[i], percentage) == true)
+    {
+     cs1 = m_Colors[i]->Amount();
+     cs2 = py->m_Colors[i]->Amount();
+     if (Utility::ComparePercentage(cs1, cs1, percentage) == true)
+       tm++;
+    }
+  }
+
+ return (float)tm/(float)c;
 }
 
 void ImageParser::Dispose() 
@@ -672,13 +727,13 @@ void ImageParser::ProcessImage()
 
   if (m_Width > m_Height)
    {
-    sw = 128;
-    sh = (int)(128 * m_Height / m_Width);
+    sw = ThumbSize;
+    sh = (int)(ThumbSize * m_Height / m_Width);
    }
   else
    {
-    sh = 128;
-    sw = (int)(128 * m_Width / m_Height);
+    sh = ThumbSize;
+    sw = (int)(ThumbSize * m_Width / m_Height);
    }
 
   m_Original = new Bitmap(sw, sh, PixelFormat24bppRGB); // imgThumb is a smaller version of the original pic
@@ -690,13 +745,13 @@ void ImageParser::ProcessImage()
 
   ExtractColor();
 
-  m_Thumb = new Bitmap(128, 128, PixelFormat24bppRGB);
+  m_Thumb = new Bitmap(ThumbSize, ThumbSize, PixelFormat24bppRGB);
   {
    Graphics gr(m_Thumb);
    if (App->DarkMode() == true)
-     gr.Clear(Utility::GetSystemColor(COLOR_WINDOWTEXT));
+     gr.Clear(Application::GetSystemColor(COLOR_WINDOWTEXT));
    else
-     gr.Clear(Utility::GetSystemColor(COLOR_WINDOW));
+     gr.Clear(Application::GetSystemColor(COLOR_WINDOW));
    gr.DrawImage(m_Original, Point(0,0));
   }
 
@@ -724,13 +779,13 @@ Bitmap *ImageParser::GetOriginal(String const &file)
 
   if (w > h)
    {
-    sw = 128;
-    sh = (int)(128 * h / w);
+    sw = ThumbSize;
+    sh = (int)(ThumbSize * h / w);
    }
   else
    {
-    sh = 128;
-    sw = (int)(128 * w / h);
+    sh = ThumbSize;
+    sw = (int)(ThumbSize * w / h);
    }
 
   org = new Bitmap(sw, sh, PixelFormat24bppRGB); // imgThumb is a smaller version of the original pic

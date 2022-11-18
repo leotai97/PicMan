@@ -493,6 +493,29 @@ class GroupSelectDlg : public ADialog
 
 };
 
+class HashTagSetSelectDlg : public ADialog
+{
+ public:
+
+ DialogResult Show(AWnd *parent, std::vector<ImageParser *> const &list);
+
+ std::vector<HashTag> HashTags() const { return m_SelectedTags; }
+
+ protected:
+
+ virtual void OnInitDialog();
+ virtual WMR  OnCommand(int child, HWND hChild);
+ 
+ void OnOK();
+
+ ListView m_List;
+ ImageList m_Images;
+
+ std::vector<HashTag> m_SelectedTags;
+ std::vector<ImageParser *> m_Pics;
+
+};
+
 class LanguageDlg : public ADialog
 {
  public:
@@ -509,4 +532,49 @@ class LanguageDlg : public ADialog
 
  ProseLanguage m_Lang;
  
+};
+
+class DupPercentDlg : public ADialog
+{
+ public:
+
+ DialogResult Show(AWnd *parent);
+
+ float Percentage() { return m_Percent; }
+
+ bool LeftGroupMembers() { return m_LeftGroupMembers; }
+ bool LeftHashTagMembers() { return m_LeftHashTagMembers; }
+ bool LeftUnassigned() { return m_LeftUnassigned; }
+ bool LeftImports() { return m_LeftImports; }
+ bool LeftNotInGroup() { return m_LeftNotInGroup; }
+ bool LeftNoHashTags() { return m_LeftNoHashTags; }
+
+ bool RightGroupMembers() { return m_RightGroupMembers; }
+ bool RightHashTagMembers() { return m_RightHashTagMembers; }
+ bool RightUnassigned() { return m_RightUnassigned; }
+ bool RightImports() { return m_RightImports; }
+ bool RightNotInGroup() { return m_RightNotInGroup; }
+ bool RightNoHashTags() { return m_RightNoHashTags; }
+
+ private:
+
+ bool m_LeftGroupMembers;
+ bool m_LeftHashTagMembers;
+ bool m_LeftUnassigned;
+ bool m_LeftImports;
+ bool m_LeftNotInGroup;
+ bool m_LeftNoHashTags;
+
+ bool m_RightGroupMembers;
+ bool m_RightHashTagMembers;
+ bool m_RightUnassigned;
+ bool m_RightImports;
+ bool m_RightNotInGroup;
+ bool m_RightNoHashTags;
+
+ virtual void OnInitDialog();
+ virtual WMR OnCommand(int child, HWND hChild);
+
+ float m_Percent;
+
 };
