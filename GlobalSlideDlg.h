@@ -29,6 +29,7 @@ class GlobalSlideDlg : public ADialog
 
  void LoadItems();
  bool GetDelay();
+ bool GetFileCount();
  std::vector<FolderItem *>GetFolders();
 
  std::vector<String> GetFileList();
@@ -50,6 +51,7 @@ class GlobalSlideDlg : public ADialog
 
  ListView  m_List;
  EditWnd   m_EditDelay;
+ EditWnd   m_EditFileCount;
  ADropList m_Globals;
 
  int     m_Sort;
@@ -57,6 +59,7 @@ class GlobalSlideDlg : public ADialog
  HashTag m_GlobalHashTag;
  Random  m_Rnd;
  float   m_Delay;
+ int     m_Files;
  
 };
 
@@ -145,7 +148,7 @@ class PSet
  FolderItem   *Folder;
  std::wstring  Key;
  String        SetName;
- int           Sort;
+ int           Sort;       // for random 
 
  std::vector<PItem> Items;
 };
@@ -157,7 +160,7 @@ class PSets
  PSets(std::vector<FolderItem *> fldrs);
 
  std::vector<String> GetItems(bool rndFldrs, bool rndItems, bool totally);
- std::vector<String> GetSets(bool rndFldrs, bool rndSets, bool totally, bool rndItems);
+ std::vector<String> GetSets(bool rndFldrs, bool rndSets, bool totally, bool rndItems, int fileCount);
 
  std::map<String, PSet> Sets;
 };

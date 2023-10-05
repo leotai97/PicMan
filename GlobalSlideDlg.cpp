@@ -20,12 +20,14 @@ void GlobalSlideDlg::OnInitDialog()
  double delay;
  String msg;
  int lastID;
+ int files;
 
  m_List.Attach(this, IDC_GLOBAL_SLIDE_LIST);
  m_List.SetCheckBoxes(true);
  FolderOpenDlg::LoadHeaders(m_List);
  
  m_EditDelay.Attach(this, IDC_GLOBAL_SLIDE_DELAY);
+ m_EditFileCount.Attach(this, IDC_GLOBAL_SLIDE_FILES);
  m_Globals.Attach(this, IDC_GLOBAL_SLIDE_HT);
 
  SetCheckState(IDC_GLOBAL_SLIDE_CHK_KEYS, App->GetSettingBool(L"IDC_GLOBAL_SLIDE_CHK_KEYS", 0) == 1);
@@ -73,6 +75,12 @@ void GlobalSlideDlg::OnInitDialog()
    delay = 30.0;
 
  m_EditDelay.SetText(String::Double(delay,3,2));
+
+ files = App->GetSettingDbl(L"SlideShowFileCount", 1);
+ if (files <= 0)
+   files = 1;
+
+ m_EditFileCount.SetText(String::Decimal(files));
 
  ADialog::OnInitDialog();
 }
@@ -176,6 +184,31 @@ bool GlobalSlideDlg::GetDelay()
  m_Delay = f;
  return true;
 }
+
+bool GlobalSlideDlg::GetFileCount()
+{
+ int f;
+ bool g;
+
+ g = String::TryIntParse(m_EditFileCount.GetText(), &f);
+   
+ if (g == true)
+  {
+   if (f < 1)
+     g = false;
+  }
+ if (g == false)
+  {
+   App->Response(L"File count cannot be less than 1");
+   return false;
+  }
+
+ App->SaveSettingInt(L"SlideShowFileCount", f);
+
+ m_Files = f;
+ return true;
+}
+
  
 std::vector<FolderItem *> GlobalSlideDlg::GetFolders()
 {
@@ -230,7 +263,7 @@ std::vector<String> GlobalSlideDlg::GetFileList()
  sets = PSets(fldrs);
 
  if (Sets() == true)
-   files=sets.GetSets(FoldersRandom(), SetsRandom(), !Folders(), PicsRandom());
+   files=sets.GetSets(FoldersRandom(), SetsRandom(), !Folders(), PicsRandom(), m_Files);
  else
    files=sets.GetItems(FoldersRandom(), PicsRandom(), !Folders());
 
@@ -247,6 +280,9 @@ void GlobalSlideDlg::OnShow()
  bool dark;
 
  if (GetDelay()==false)
+   return;
+
+ if (GetFileCount()==false)
    return;
 
  files = GetFileList();
@@ -324,6 +360,9 @@ void GlobalSlideDlg::OnChooseShow()
  if (GetDelay()==false)
    return;
 
+ if (GetFileCount()==false)
+   return;
+
  fldrs=GetFolders();
 
  if (fldrs.size()==0)
@@ -339,14 +378,25 @@ void GlobalSlideDlg::OnChooseShow()
  
  for(const auto &set : sets.Sets)
   {
-   item = ListViewItem(set.second.Folder->Folder());
-   item.SubItems.push_back(set.second.SetName);
-   item.SubItems.push_back(String::Decimal((int)set.second.Items.size()));
-   dlg.Items.push_back(item);
+   if (set.second.Items.size() >= m_Files)
+    {
+     item = ListViewItem(set.second.Folder->Folder());
+     item.SubItems.push_back(set.second.SetName);
+     item.SubItems.push_back(String::Decimal((int)set.second.Items.size()));
+     dlg.Items.push_back(item);
+    }
   }
- r=dlg.Show(Wnd);
- if (r != DialogResult::OK)
+ if (dlg.Items.size() > 0)
   {
+   r=dlg.Show(Wnd);
+   if (r != DialogResult::OK)
+    {
+     return;
+    }
+  }
+ else
+  {
+   App->Response(L"No sets match the slideshow criteria");
    return;
   }
 
@@ -370,7 +420,7 @@ void GlobalSlideDlg::OnChooseShow()
     }
   }
  if (Sets() == true)
-   files=newSets.GetSets(FoldersRandom(), SetsRandom(), !Folders(), PicsRandom());
+   files=newSets.GetSets(FoldersRandom(), SetsRandom(), !Folders(), PicsRandom(), m_Files);
  else
    files=newSets.GetItems(FoldersRandom(), PicsRandom(), !Folders() && PicsRandom());
 
@@ -473,12 +523,14 @@ std::vector<String> PSets::GetItems(bool rndFldrs, bool rndItems, bool totally)
  std::sort(items.begin(), items.end(), PItemSorter(sort));
 
  for(const auto &pi : items)
+  {
    list.push_back(pi.Path);
+  }
 
  return list;
 }
 
-std::vector<String> PSets::GetSets(bool rndFldrs, bool rndSets, bool totally, bool rndItems)
+std::vector<String> PSets::GetSets(bool rndFldrs, bool rndSets, bool totally, bool rndItems, int fileCount)
 {
  std::vector<PSet> sets;
  std::vector<String> list;
@@ -515,8 +567,11 @@ std::vector<String> PSets::GetSets(bool rndFldrs, bool rndSets, bool totally, bo
   {
    if (rndItems)
      std::sort(set.Items.begin(), set.Items.end(), PItemSorter(PItemSorter::SortType::TotallyRandom));
-   for(const auto &pi : set.Items)
-     list.push_back(pi.Path);
+   if (set.Items.size() >= fileCount)
+    {
+     for(const auto &pi : set.Items)
+       list.push_back(pi.Path);
+    }
   }
  return list;
 }
@@ -535,7 +590,7 @@ bool PSetSorter::operator ()(const PSet &sx, const PSet &sy)
       if (c!=0)
         return c < 0;
       else
-        return String::Compare(sx.Key, sy.Key) < 0;
+        return String::Compare(sx.SetName, sy.SetName) < 0;
      }
    case SortType::SortedFoldersRandomSets:
      {
@@ -547,15 +602,15 @@ bool PSetSorter::operator ()(const PSet &sx, const PSet &sy)
      }
    case SortType::RandomFoldersSortedSets:
      {
-      c=IntCompare(sx.Sort, sy.Sort);
+      c=IntCompare(sx.Folder->Random, sy.Folder->Random);
       if (c!=0)
         return c<0;
       else
-        return String::Compare(sx.Key, sy.Key)<0;
+        return String::Compare(sx.SetName, sy.SetName) < 0;
      } 
    case SortType::RandomFoldersRandomSets:
      {
-      c=IntCompare(sx.Sort, sy.Sort);
+      c=IntCompare(sx.Folder->Random, sy.Folder->Random);
       if (c!=0)
         return c<0;
       else

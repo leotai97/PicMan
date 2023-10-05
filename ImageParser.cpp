@@ -12,6 +12,7 @@ PicColor::PicColor(int ck, BYTE r, BYTE g, BYTE b, int count)
  m_G=g;
  m_B=b;
  m_Amount=count;
+ m_Ratio = 0.0F;
 }
 
 int PicColor::CompareRGB(PicColor *p1, PicColor *p2)
@@ -485,7 +486,34 @@ FileMoveResult ImageParser::Mover(String const &f,String const &t)
    return res;
   }
 
- ret=::MoveFileW(f.Chars(), t.Chars());
+ if (Utility::FileExists(f) == false)
+  {
+   res.Success = false;
+   res.Message = L"From file doesn't exist -- "; 
+   res.Message += t;
+   return res;
+  }
+
+ if (Utility::FileExists(t) == true)
+  {
+   res.Success = false;
+   res.Message = L"To file already exists -- "; 
+   res.Message += t;
+   return res;
+  }
+
+ try
+  {
+   ret=::MoveFileW(f.Chars(), t.Chars());
+  }
+ catch(...)
+  {
+   res.Success = false;
+   res.Message = L"System call ::MoveFileW(f,t) try catch fail -- "; 
+   res.Message += String::GetLastErrorMsg(GetLastError());
+   return res;
+  }
+
  if (ret==FALSE)
   {
    res.Success = false;
@@ -803,7 +831,7 @@ void ImageParser::ExtractColor()
 {
  std::vector<PicColor *> arr;
  Rect rct;
- int r,g,b,k,w,h;
+ int r,g,b,k,w,h,t;
  long nColors, rba, gba, bba;
  PicColor *pc;
  int nEdgeColors;
@@ -821,6 +849,7 @@ void ImageParser::ExtractColor()
 
  w=m_Original->GetWidth();
  h=m_Original->GetHeight();
+ t = w * h;
 
  #ifdef _DEBUG
  if (w < 1 || h < 1) throw L"width and or height < 1";
@@ -880,6 +909,7 @@ void ImageParser::ExtractColor()
 
  for (const auto &it : ColorIndex)
   {
+   it.second->Finalize(t);
    arr.push_back(it.second);
   }
  std::sort(arr.begin(), arr.end(), ImageParserCustomSort);
@@ -965,7 +995,7 @@ bool ImageParserSorter::operator() (ImageParser *i1, ImageParser *i2)
       {
        k = PicColor::CompareRGB(ix->Colors()[i], iy->Colors()[i]);
        if (k != 0) return k < 0;
-       if (ix->Colors()[i]->Amount() < iy->Colors()[i]->Amount()) 
+       if (ix->Colors()[i]->Ratio() < iy->Colors()[i]->Ratio()) 
          return true;
       }
      return false;

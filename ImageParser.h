@@ -9,14 +9,17 @@ class PicColor
 
  inline void Accumulate() { m_Amount++; }
  inline void Accumulate(int amt) { m_Amount+=amt; }
+ inline void Finalize(int total) { m_Ratio = (float)m_Amount / (float)total; }
 
  static int CompareRGB(PicColor *p1, PicColor *p2);
+ static int CompareRatio(PicColor *p1, PicColor *p2);
  static bool EqualRGB(PicColor *p1, PicColor *p2);
  static bool PercentageRGB(PicColor *p1, PicColor *p2, float percentage);
 
 
  inline int Key() { return m_Key; }
  inline int Amount() { return m_Amount; }
+ inline float Ratio() { return m_Ratio; }
  inline BYTE R() { return m_R; }
  inline BYTE G() { return m_G; }
  inline BYTE B() { return m_B; }
@@ -25,6 +28,7 @@ class PicColor
 
  int m_Key;
  int m_Amount;
+ float m_Ratio;
  BYTE m_R;
  BYTE m_G;
  BYTE m_B;

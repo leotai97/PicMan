@@ -113,6 +113,8 @@ class MainWnd : public PopUpWnd
  void mnuViewSetListViewShowAll();
  void mnuViewSetGroupViewHashtags();
  void mnuViewSetGroupViewFileNames();
+ void mnuViewListFolder();
+ void mnuViewListImports();
 
  void mnuToolsSetPhotoEditor();
  void mnuToolsDBConnection();
@@ -243,10 +245,8 @@ class MainWnd : public PopUpWnd
  SplitContainer m_SplitPics;  // splits m_PicList and m_PicTree
  SplitContainer m_SplitItems; // splits m_TabLists and either m_TreePics or m_TreeHashtags
 
- TabWnd      m_TabList;      // holds m_ListPics and m_ListImports
  PicListView m_ListPics;     // list of unassigned pics not in either m_TreePics or m_TreeHashtags
  PicListView m_ListImport;   // list of pictures to import i.e. e:\pictures\incoming
- 
 
  PicturesTree    m_TreeGroup;  // tree of pictures i.e. pic_001.jpg pic_002.jpg
  HashTagTreeView m_TreeTags;   // tree of pic hashtags with filter control

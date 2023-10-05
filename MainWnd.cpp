@@ -67,42 +67,43 @@ bool MainWnd::Create(String const &wndcls, int nCmdShow)
  m_SplitMain.Create(SPLIT_MAIN, this, SplitterWnd::SplitterOrientation::Vertical, 0.50);
  m_SplitMain.Show(); 
 
- m_TabList.Create(this, Rect(5, 5, 80, 100));
+ logFile.Write(L"m_TabList Create");
 
- m_ListPics.Create(&m_TabList, LVS_REPORT, Rect(5, 5, 60, 90));
- m_ListPics.SetOwner(this);
- m_TabList.AddTab(L"Runtime", &m_ListPics);
- m_ListPics.SetOwner(this);
- m_ListImport.Create(&m_TabList, LVS_REPORT, Rect(5, 5, 60, 90));
- m_ListImport.SetOwner(this);
- m_TabList.AddTab(App->Prose.Text(MAIN_IMPORTS), &m_ListImport);
- m_ListImport.Visible(false);
- m_ListImport.SetOwner(this);
- m_TabList.Show();
+ m_ListPics.Create(this, LVS_REPORT, Rect(5, 5, 60, 90));
+ m_ListPics.Visible(false);
+ m_ListImport.Create(this, LVS_REPORT, Rect(5, 5, 60, 90));
  
+ logFile.Write(L"TreeView Controls Create");
  m_TreeGroup.Create(this, Rect(0,0, 40, 100));
  m_TreeTags.Create(this, Rect(0,0,40,100));
 
  m_SplitItems.Create(SPLIT_ITEMS, this, SplitterWnd::SplitterOrientation::Vertical, 0.50);
- m_SplitItems.SetWindow1(&m_TabList);
+ m_SplitItems.SetWindow1(&m_ListImport);
  m_SplitItems.SetWindow2(nullptr); // will be sizing the tree and it's hashtag filter separately
  m_SplitItems.Show();
  m_TreeGroup.Show();
 
+ logFile.Write(L"Picture Controls Create");
  m_PicList.Create(this, Rect(0,0,50,50));
  m_PicTree.Create(this, Rect(0,58,50,100));
  m_SplitPics.Create(SPLIT_PICS, this, SplitterWnd::SplitterOrientation::Horizontal, 0.50);
+
+ logFile.Write(L"Add Picture Controls To SplitPics");
  m_SplitPics.SetWindow1(&m_PicList);
  m_SplitPics.SetWindow2(&m_PicTree);
 
+ logFile.Write(L"Set m_Status Panes");
  m_Status.AddAutoPane(StatusBarPane::Content::Text);
  m_Status.AddFixedPane(StatusBarPane::Content::Progress, 190);
+ logFile.Write(L"Status Bar Create");
  m_Status.Create(this);
  
+ logFile.Write(L"Show m_PicList, m_PicTree, and m_SplitPics");
  m_PicList.Show();
  m_PicTree.Show();
  m_SplitPics.Show();
 
+ logFile.Write(L"Add m_ListPics and m_ListImport to m_ImageThumbs");
  m_ImageThumbs.AddClient(&m_ListPics);
  m_ImageThumbs.AddClient(&m_ListImport);
 
@@ -249,6 +250,11 @@ void MainWnd::LoadMainMenu()
  sub->AddMenu(ID_VIEW_SETGROUPVIEW_FILENAMES, true, true, 0);
  sub->AddMenu(ID_VIEW_SETGROUPVIEW_HASHTAGS);
 
+ sub = top->SubMenu(ID_VIEW_LIST);
+ 
+ sub->AddMenu(ID_VIEW_LIST_FOLDER, false, true, 0);
+ sub->AddMenu(ID_VIEW_LIST_IMPORTS, true, true, 0);
+
  top = m_Menu.SubMenu(ID_TOOL);
  top->AddMenu(ID_TOOL_SETPHOTOEDITOR);
  top->AddMenu(ID_TOOL_DBCONNECTION);
@@ -384,21 +390,12 @@ WMR MainWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
 
  ret = PopUpWnd::OnNotify(hChild, child, code, lParam);
 
- if (hChild == m_TabList.Handle())
-  {
-   m_TabList.OnNotify(hChild, child, code, lParam);
-  }
-
  switch(nm->code)
   {
    case LVN_COLUMNCLICK:
     {
      if (hChild == m_ListPics.Handle()) m_ListPics.OnNotify(hChild, child, code, lParam);
      if (hChild == m_ListImport.Handle()) m_ListImport.OnNotify(hChild, child, code, lParam);
-    } break;
-   case TCN_SELCHANGE:
-    {
-     m_TabList.OnTabChange();  // only have 1 tab control
     } break;
    case NM_DBLCLK:
     {
@@ -454,12 +451,14 @@ WMR MainWnd::OnContextMenu(HWND hChild, Point const &pt)
 { 
  WMR ret = WMR::Zero;
 
- if (hChild == m_TabList.Handle())
+ if (hChild == m_ListPics.Handle())
   {
-   if (m_TabList.GetCurrentTab() == 0)
-     ShowMenuListPics(pt);
-   else
-     ShowMenuListImport(pt); 
+   ShowMenuListPics(pt);
+   ret = WMR::One;
+  }
+ if (hChild == m_ListImport.Handle())
+  {
+   ShowMenuListImport(pt); 
    ret = WMR::One;
   }
  if (hChild == m_TreeTags.Tree.Handle())
@@ -792,6 +791,8 @@ WMR MainWnd::MenuHandler(int wmId)
    case ID_VIEW_SETLISTVIEW_SHOW_ALL: mnuViewSetListViewShowAll(); break;
    case ID_VIEW_SETGROUPVIEW_HASHTAGS: mnuViewSetGroupViewHashtags(); break;
    case ID_VIEW_SETGROUPVIEW_FILENAMES: mnuViewSetGroupViewFileNames(); break;
+   case ID_VIEW_LIST_FOLDER:   mnuViewListFolder(); break;
+   case ID_VIEW_LIST_IMPORTS:  mnuViewListImports(); break;
 
    case ID_TOOL_SETPHOTOEDITOR: mnuToolsSetPhotoEditor(); break;
    case ID_TOOL_DBCONNECTION:   mnuToolsDBConnection(); break;
@@ -1442,7 +1443,7 @@ void MainWnd::mnuViewFolderProperties()
 
 void MainWnd::mnuViewSortListName()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FileName);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FileName);
@@ -1450,7 +1451,7 @@ void MainWnd::mnuViewSortListName()
 
 void MainWnd::mnuViewSortListNameNmbr()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::NameWithNumber);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::NameWithNumber);
@@ -1458,21 +1459,21 @@ void MainWnd::mnuViewSortListNameNmbr()
 
 void MainWnd::mnuViewSortListWidth()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::Width);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::Width);
 }
 void MainWnd::mnuViewSortListHeight()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::Height);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::Height);
 }
 void MainWnd::mnuViewSortListWidthDivHeight()
 {
-if (m_TabList.GetCurrentTab() == 0)
+if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::Ratio);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::Ratio);
@@ -1480,21 +1481,21 @@ if (m_TabList.GetCurrentTab() == 0)
 
 void MainWnd::mnuViewSortListRGBColors()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
   m_ListPics.SetSort(ImageParser::SortChoices::ColorRGB);
  else
   m_ListImport.SetSort(ImageParser::SortChoices::ColorRGB);
 }
 void MainWnd::mnuViewSortListBorderColorAverage()
 {
-if (m_TabList.GetCurrentTab() == 0)
+if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::EdgeAverage);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::EdgeAverage);
 }
 void MainWnd::mnuViewSortListDateAdded()
 {
-if (m_TabList.GetCurrentTab() == 0)
+if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FileDate);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FileDate);
@@ -1502,7 +1503,7 @@ if (m_TabList.GetCurrentTab() == 0)
 
 void MainWnd::mnuViewSortListFileSize()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FileSize);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FileSize);
@@ -1510,7 +1511,7 @@ void MainWnd::mnuViewSortListFileSize()
 
 void MainWnd::mnuViewSortListGlobalHashTags()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::GlobalHashTags);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::GlobalHashTags);
@@ -1518,7 +1519,7 @@ void MainWnd::mnuViewSortListGlobalHashTags()
 
 void MainWnd::mnuViewSortListFolderHashTags()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FolderHashTags);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FolderHashTags);
@@ -1971,6 +1972,31 @@ void MainWnd::mnuViewSetGroupViewFileNames()
  RefreshBoth();
 }
 
+void MainWnd::mnuViewListFolder()
+{
+ m_Menu.SetCheckState(ID_VIEW_LIST_FOLDER, true);
+ m_Menu.SetCheckState(ID_VIEW_LIST_IMPORTS, false);
+
+ m_SplitItems.SetWindow1(&m_ListPics);
+ m_SplitItems.SplitterChanged();
+
+ m_ListImport.Visible(false);
+ m_ListPics.Visible(true);
+}
+
+void MainWnd::mnuViewListImports()
+{
+ m_Menu.SetCheckState(ID_VIEW_LIST_FOLDER, false);
+ m_Menu.SetCheckState(ID_VIEW_LIST_IMPORTS, true);
+
+ m_SplitItems.SetWindow1(&m_ListImport);
+ m_SplitItems.SplitterChanged();
+
+ m_ListImport.Visible(true);
+ m_ListPics.Visible(false);
+}
+
+
 // Tools Menu handlers
 
 void MainWnd::mnuToolsSetPhotoEditor()
@@ -2020,77 +2046,77 @@ void MainWnd::OnHelpAbout()
 
 void MainWnd::mnuListSortByFileName()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FileName);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FileName);
 }
 void MainWnd::mnuListSortByNameNumber()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::NameWithNumber);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::NameWithNumber);
 }
 void MainWnd::mnuListSortByWidth()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::Width);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::Width);
 }
 void MainWnd::mnuListSortByHeight()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::Height);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::Height);
 }
 void MainWnd::mnuListsSortByRatio()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::Ratio);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::Ratio);
 }
 void MainWnd::mnuListSortByColor()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::ColorRGB);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::ColorRGB);
 }
 void MainWnd::mnuListSortByEdgeAvg()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::EdgeAverage);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::EdgeAverage);
 }
 void MainWnd::mnuListSortByFileSize()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FileSize);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FileSize);
 }
 void MainWnd::mnuListSortByFileDate()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FileDate);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FileDate);
 }
 void MainWnd::mnuListSortByGlobalTags()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::GlobalHashTags);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::GlobalHashTags);
 }
 void MainWnd::mnuListSortByFolderTags()
 {
- if (m_TabList.GetCurrentTab() == 0)
+ if (m_ListPics.IsVisible() == true)
    m_ListPics.SetSort(ImageParser::SortChoices::FolderHashTags);
  else
    m_ListImport.SetSort(ImageParser::SortChoices::FolderHashTags);
@@ -3794,6 +3820,10 @@ void MainWnd::OpenFolder(FolderItem *folder)
  String msg;
  int i;
 
+ msg = L"Picture Manager --- ";
+ msg += folder->Folder();
+ SetText(msg);
+
  m_ListPics.Clear();
  m_TreeGroup.Clear();
  m_TreeTags.Tree.Clear();
@@ -3818,7 +3848,7 @@ void MainWnd::OpenFolder(FolderItem *folder)
 
  folder->Load();
 
- m_TabList.SetTabText(0, folder->Folder());
+ mnuViewListFolder();
 
  list = ProcessFolder(folder);
 
@@ -3886,6 +3916,13 @@ void MainWnd::CloseFolder()
 {
  WaitCursor wait(WaitCursor::WaitStyle::WaitNow);
  std::vector<ImageParser *> list;
+ String s;
+
+ s =  L"Picture Manager --- ";
+ s += m_CurrentBase->DirPath();
+ SetText(s);
+
+ mnuViewListImports(); // switch to import list
 
  SetPictureViewer(&m_PicList, nullptr);
  SetPictureViewer(&m_PicTree, nullptr);
@@ -3910,7 +3947,6 @@ void MainWnd::CloseFolder()
  m_CurrentFolder->Close();
 
  ReloadImageList(); // add imports back in
- m_TabList.SetTabText(0, App->Prose.Text(MAIN_FOLDER_NAME));
  m_Status.SetText(0, App->Prose.Text(MAIN_FOLDER_CLOSED));
  m_CurrentFolder = nullptr;
 }
@@ -4672,30 +4708,47 @@ bool MainWnd::ReorderList(String const &strGroup, std::vector<ImageParser *> lis
 
  pgb.Max(list.size());
  i = 1;
- for(const auto &p : list)
+
+ try
   {
-   path = strGroup;
-   path += L"_";
-   path += String::Decimal(i, 3);
-   path += L".ord";
-   if (p->RenameByFileToDir(path, fldr) == false) return false; // straighten up the list
-   pgb.Progress();
-   i++;
+   for(const auto &p : list)
+    {
+     path = strGroup;
+     path += L"_";
+     path += String::Decimal(i, 3);
+     path += L".ord";
+     if (p->RenameByFileToDir(path, fldr) == false) return false; // straighten up the list
+     pgb.Progress();
+     i++;
+    }
+  }
+ catch(...)
+  {
+   App->Response(L"Unhandled exception occurred in MainWnd::ReorderList stage 1.  .ord files likely present in current folder");
+   return false;
   }
 
  pgb.Max(list.size());
  i = 1;
- for(const auto &p : list)
+ try
   {
-   path = strGroup;
-   path += L"_";
-   path += String::Decimal(i, 3);
-   path += L".jpg";
-   if (p->RenameByFileToDir(path, fldr) == false) return false; // back to jpg after straightening
-   if (isImported == true)
-     p->SetImport(false);
-   pgb.Progress();
-   i++;
+   for(const auto &p : list)
+    {
+     path = strGroup;
+     path += L"_";
+     path += String::Decimal(i, 3);
+     path += L".jpg";
+     if (p->RenameByFileToDir(path, fldr) == false) return false; // back to jpg after straightening
+     if (isImported == true)
+       p->SetImport(false);
+     pgb.Progress();
+     i++;
+    }
+  }
+ catch(...)
+  {
+   App->Response(L"Unhandled exception occurred in MainWnd::ReorderList stage 2.  .ord files likely present in current folder");
+   return false;
   }
 
  folder->ProcessPictures(list); // not sure why there would be new pictures in the list...

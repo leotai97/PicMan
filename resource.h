@@ -72,6 +72,7 @@
 #define IDC_GLOBAL_SLIDE_DELAY          1020
 #define IDC_GLOBAL_SLIDE_CHK_KEYS       1021
 #define IDC_GLOBAL_SLIDE_SETS_LIST      1022
+#define IDC_GLOBAL_SLIDE_FILES          1022
 #define IDC_GLOBAL_SLIDE_SELECT_ALL     1023
 #define IDC_GLOBAL_SLIDE_CHECK_ALL      1024
 #define IDC_HASHTAG_CHOOSE_LIST         1025
@@ -130,6 +131,8 @@
 #define IDC_GLOBAL_SLIDE_1              1077
 #define IDC_GLOBAL_SLIDE_2              1078
 #define IDC_LOGIN_1                     1079
+#define IDC_GLOBAL_SLIDE_3              1079
+#define IDC_GLOBAL_SLIDE_LABEL_FILES    1079
 #define IDC_LOGIN_2                     1080
 #define IDC_LOGIN_3                     1081
 #define IDC_LOGIN_4                     1082
