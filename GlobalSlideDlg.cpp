@@ -76,7 +76,7 @@ void GlobalSlideDlg::OnInitDialog()
 
  m_EditDelay.SetText(String::Double(delay,3,2));
 
- files = App->GetSettingDbl(L"SlideShowFileCount", 1);
+ files = (int)App->GetSettingDbl(L"SlideShowFileCount", 1);
  if (files <= 0)
    files = 1;
 
@@ -181,7 +181,7 @@ bool GlobalSlideDlg::GetDelay()
 
  App->SaveSettingDbl(L"SlideShowDelay", (double)f);
 
- m_Delay = f;
+ m_Delay = (float)f;
  return true;
 }
 

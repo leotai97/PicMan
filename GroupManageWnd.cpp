@@ -48,7 +48,7 @@ void GroupManageWnd::OnInitDialog()
 
  m_SB.AddAutoPane(StatusBarPane::Content::Text);
  m_SB.AddFixedPane(StatusBarPane::Content::Progress, 190);
- m_SB.Create(this);
+ m_SB.CreateSB(this);
 
  Maximize();
  OnSize();
@@ -115,7 +115,7 @@ void GroupManageWnd::OnSize()
 
  m_Split.CalcSizes(r); 
 
- m_SB.OnSize(Rect(0,0,cs.Width, cs.Height));
+ m_SB.OnSize();
  
 }
 
@@ -174,6 +174,10 @@ WMR GroupManageWnd::MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARA
        id = m_List.GetItemParam(ndx);
        OnListViewMiddle(id);
       }
+    } break;
+   case WM_SIZE:
+    {
+     OnSize();
     } break;
    default: return ADialog::MessageHandler(hWnd, message, wParam, lParam);
   }

@@ -220,7 +220,7 @@ class MainWnd : public PopUpWnd
  bool MoveToExistingGroup(std::vector<ImageParser *> const &list);
  bool MoveToExistingGroup(std::vector<ImageParser *> const &list, String const &groupName);
  bool ReplaceHashTags(std::vector<ImageParser *> const &list);
- bool MoveToExistingHashTag(std::vector<ImageParser *> const &list); 
+ //bool MoveToExistingHashTag(std::vector<ImageParser *> const &list); 
 
  std::vector<ImageParser *> ProcessFolder(FolderItem *folder);
  std::vector<ImageParser *> LoadImages(std::vector<ImageParser *> list);

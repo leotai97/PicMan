@@ -96,7 +96,7 @@ bool MainWnd::Create(String const &wndcls, int nCmdShow)
  m_Status.AddAutoPane(StatusBarPane::Content::Text);
  m_Status.AddFixedPane(StatusBarPane::Content::Progress, 190);
  logFile.Write(L"Status Bar Create");
- m_Status.Create(this);
+ m_Status.CreateSB(this);
  
  logFile.Write(L"Show m_PicList, m_PicTree, and m_SplitPics");
  m_PicList.Show();
@@ -264,7 +264,7 @@ void MainWnd::LoadMainMenu()
  top = m_Menu.SubMenu(ID_HELP);
  top->AddMenu(ID_HELP_ABOUT);
  
- SetMenu(m_Menu);
+ SetPopUpMenu(m_Menu);
 }
 
 Rect MainWnd::SplitterRect(HWND hSplit)
@@ -337,7 +337,7 @@ void MainWnd::SizeChildren()
  m_PanelPics=m_SplitMain.GetRect2();
  m_SplitPics.CalcSizes(m_PanelPics);
 
- m_Status.OnSize(r); 
+ m_Status.OnSize(); 
 
  Refresh();
 }
@@ -3111,6 +3111,7 @@ void MainWnd::mnuPopUpTreeGroupDelete()
  std::vector<ImageParser *> list;
  TreeNode node;
  String msg;
+ int i;
 
  if (m_TreeGroup.IsNodeSelected() == false)
   {
@@ -3143,6 +3144,10 @@ void MainWnd::mnuPopUpTreeGroupDelete()
  
  wait.BeginWait();
 
+ m_Status.ProgressMax(1, list.size());
+ m_Status.ProgressValue(1, 0);
+ i=0;
+
  for(const auto &px : list)
   {
    if (px->Delete() == false)
@@ -3159,13 +3164,14 @@ void MainWnd::mnuPopUpTreeGroupDelete()
      px->Dispose();
      delete px;
     }
+   m_Status.ProgressValue(1, i++);
   }
  m_TreeGroup.RemoveItem(node);
  msg = L"Group ";
  msg += node.Text;
  msg += L" Moved To Recycle Bin";
  m_Status.SetText(0, msg);
-
+ m_Status.ProgressValue(1, 0);
  wait.EndWait();
 }
 
@@ -4892,8 +4898,7 @@ Rect MainWnd::ClientRect()
  if (m_Status.Handle() == 0) 
    return PopUpWnd::ClientRect(); 
 
- rct=m_Status.GetRect();
- h=rct.Height;
+ h=m_Status.GetSBHeight();
 
  ::GetClientRect(m_hWnd, &r);
  rct=Rect(0, 0, r.right-2, r.bottom-( 2 + h) ); 

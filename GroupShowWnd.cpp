@@ -42,7 +42,7 @@ void GroupShowWnd::OnInitDialog()
  m_Split.SetWindow2(&m_Pic); 
 
  m_SB.AddAutoPane(StatusBarPane::Content::Text);
- m_SB.Create(this);
+ m_SB.CreateSB(this);
  
  if (m_FilterType == HashTagSelectCtrl::enumFilterStyle::FilterGlobal)
    OnHashTag(); // show the filter at startup
@@ -117,8 +117,7 @@ void GroupShowWnd::OnSize()
 
  m_Split.CalcSizes(r); 
 
- m_SB.OnSize(Rect(0,0,cs.Width, cs.Height));
- 
+ m_SB.OnSize();
 }
 
 WMR GroupShowWnd::OnNotify(HWND hChild, int child, UINT code, LPARAM lParam)
@@ -182,6 +181,10 @@ WMR GroupShowWnd::MessageHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
        id = m_HTLV.List.GetItemParam(ndx);
        OnListViewMiddle(id);
       }
+    } break;
+   case WM_SIZE:
+    {
+     OnSize();
     } break;
    default: return ADialog::MessageHandler(hWnd, message, wParam, lParam);
   }

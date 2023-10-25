@@ -1589,7 +1589,6 @@ void SpreadSheet::OnDelete()
  std::vector<int> listIDs;
  ImageParser *px;
  String q;
- int i, id;
 
  if (m_SelectedRow < 0)
    return;

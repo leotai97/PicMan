@@ -2019,7 +2019,7 @@ void HashTagChooseDlg::OnListViewItemChanged(int child, NMLISTVIEW *pLVN)
  if (child != IDC_HASHTAG_CHOOSE_LIST) 
    return;
 
- id = pLVN->lParam;
+ id = (int)pLVN->lParam;
 
  switch(m_HashTagType)
   {

@@ -12,7 +12,7 @@ class PicColor
  inline void Finalize(int total) { m_Ratio = (float)m_Amount / (float)total; }
 
  static int CompareRGB(PicColor *p1, PicColor *p2);
- static int CompareRatio(PicColor *p1, PicColor *p2);
+// static int CompareRatio(PicColor *p1, PicColor *p2);
  static bool EqualRGB(PicColor *p1, PicColor *p2);
  static bool PercentageRGB(PicColor *p1, PicColor *p2, float percentage);
 
